@@ -31,8 +31,6 @@ shadowsockspwd=$(echo $init_config | jq -r '.shadowsockspwd')
 shadowsockscipher=$(echo $init_config | jq -r '.shadowsockscipher')
 shadowsocksservice=$(echo $init_config | jq -r '.shadowsocksservice')
 
-rm -rf /tmp/init.config
-
 echo "安装frpc,并添加守护进程"
 wget -q https://github.com/fatedier/frp/releases/download/v${frp_version}/frp_${frp_version}_linux_amd64.tar.gz
 tar -xzf frp_${frp_version}_linux_amd64.tar.gz
@@ -97,7 +95,7 @@ EOF
 
 \cp -rf /usr/lib/chromium-browser/chromedriver /usr/bin
 pip3 install selenium
-rm -rf frp_${frp_version}_linux_amd64*
+rm -rf frp_${frp_version}_linux_amd64* /tmp/init.config
 sudo service supervisor start
 
 echo "设置ssh配置文件，开启远程访问权限"
