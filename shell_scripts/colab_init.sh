@@ -1,9 +1,7 @@
 #!/usr/bin/env bash
-echo "修改时区"
 ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
 
 if [ ! "$(command -v bash-completion)" ]; then
-  echo "写入auto completion配置文件"
   cat >>~/.bashrc <<-EOF
 if ! shopt -oq posix; then
   if [ -f /usr/share/bash-completion/bash_completion ]; then
@@ -32,6 +30,8 @@ shadowsocksport=$(echo $init_config | jq -r '.shadowsocksport')
 shadowsockspwd=$(echo $init_config | jq -r '.shadowsockspwd')
 shadowsockscipher=$(echo $init_config | jq -r '.shadowsockscipher')
 shadowsocksservice=$(echo $init_config | jq -r '.shadowsocksservice')
+
+rm -rf /tmp/init.config
 
 echo "安装frpc,并添加守护进程"
 wget -q https://github.com/fatedier/frp/releases/download/v${frp_version}/frp_${frp_version}_linux_amd64.tar.gz
