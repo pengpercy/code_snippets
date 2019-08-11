@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
-#修改时区
+echo "修改时区"
 ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
 
+echo "获取配置信息"
 init_config=$(cat /tmp/init.config | base64 -di --decode)
 frp_version=$(echo $init_config | jq -r '.frp_version')
 frp_token=$(echo $init_config | jq -r '.frp_token')
@@ -28,7 +29,7 @@ EOF
     source ~/.bashrc
 fi
 
-#安装frpc,并添加守护进程
+echo "安装frpc,并添加守护进程"
 sudo apt install -q -y shadowsocks-libev rng-tools supervisor vim htop chromium-chromedriver git jq bash-completion
 wget -q https://github.com/fatedier/frp/releases/download/v${frp_version}/frp_${frp_version}_linux_amd64.tar.gz
 tar -xzf frp_${frp_version}_linux_amd64.tar.gz
@@ -42,6 +43,7 @@ if [ ! -d /var/log/frp ]; then
     mkdir -p /var/log/frp
 fi
 
+echo "写入frp配置文件"
 # \cp -rf /tmp/frpc.conf /etc/supervisor/conf.d/
 cat >/etc/supervisor/conf.d/frpc.conf <<-EOF
 [program:frpc]
@@ -95,14 +97,14 @@ pip3 install selenium
 rm -rf frp_${frp_version}_linux_amd64*
 sudo service supervisor start
 
-#设置ssh配置文件，开启远程访问权限
+echo "设置ssh配置文件，开启远程访问权限"
 sed -re 's/^(\#)(Port)([[:space:]]+)(.*)/\2\3\4/' /etc/ssh/sshd_config >~/temp.cnf && mv -f ~/temp.cnf /etc/ssh/sshd_config
 sed -re 's/^(\#)(ListenAddress)([[:space:]]+)(0\.0\.0\.0)(.*)/\2\3\4/' /etc/ssh/sshd_config >~/temp.cnf && mv -f ~/temp.cnf /etc/ssh/sshd_config
 sed -re 's/^(\#)(PermitRootLogin)([[:space:]]+)(prohibit-password)(.*)/\2\3\4/' /etc/ssh/sshd_config >~/temp.cnf && mv -f ~/temp.cnf /etc/ssh/sshd_config
 sed -re 's/^(PermitRootLogin)([[:space:]]+)prohibit-password/\1\2yes/' /etc/ssh/sshd_config >~/temp.cnf && mv -f ~/temp.cnf /etc/ssh/sshd_config && (echo "${ssh_password}" && echo "${ssh_password}") | sudo passwd root
 sudo service ssh restart
 
-#安装shadowsocks
+echo "安装shadowsocks"
 cat >/etc/shadowsocks-libev/config.json <<-EOF
 {
     "server":"0.0.0.0",
@@ -117,6 +119,7 @@ cat >/etc/shadowsocks-libev/config.json <<-EOF
 }
 EOF
 
+echo "启动ss服务"
 wget -qO /etc/init.d/shadowsocks-libev "$shadowsocksservice"
 chmod +x /etc/init.d/shadowsocks-libev
 service shadowsocks-libev start
