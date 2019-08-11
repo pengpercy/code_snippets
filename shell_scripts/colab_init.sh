@@ -16,7 +16,7 @@ EOF
 fi
 
 echo "安装依赖"
-sudo apt install -q -y shadowsocks-libev rng-tools supervisor vim htop chromium-chromedriver git jq bash-completion
+sudo apt install update && sudo apt install -q -y shadowsocks-libev rng-tools supervisor vim htop chromium-chromedriver git jq bash-completion
 source ~/.bashrc
 
 echo "获取配置信息"
