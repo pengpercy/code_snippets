@@ -73,7 +73,7 @@ token = ${frp_token}
 type = tcp
 local_ip = localhost
 local_port = 22
-remote_port = ${remotesshport}
+remote_port = ${ssh_port}
 custom_domains = ${frp_server_domain}
 
 [colab.ss]
