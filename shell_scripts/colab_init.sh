@@ -45,7 +45,6 @@ if [ ! -d /var/log/frp ]; then
 fi
 
 echo "写入frp配置文件"
-# \cp -rf /tmp/frpc.conf /etc/supervisor/conf.d/
 cat >/etc/supervisor/conf.d/frpc.conf <<-EOF
 [program:frpc]
 command = frpc -c /etc/frp/frpc.ini
@@ -60,7 +59,6 @@ stopsignal = KILL
 stopwaitsecs = 10
 EOF
 
-#\cp -rf /tmp/frpc.ini /etc/frp/
 cat >/etc/frp/frpc.ini <<-EOF
 [common]
 server_addr = ${frp_server_addr}
