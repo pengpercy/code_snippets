@@ -2,6 +2,23 @@
 echo "修改时区"
 ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
 
+if [ ! "$(command -v bash-completion)" ]; then
+  echo "写入auto completion配置文件"
+  cat >>~/.bashrc <<-EOF
+if ! shopt -oq posix; then
+  if [ -f /usr/share/bash-completion/bash_completion ]; then
+    . /usr/share/bash-completion/bash_completion
+  elif [ -f /etc/bash_completion ]; then
+    . /etc/bash_completion
+  fi
+fi
+EOF
+fi
+
+echo "安装依赖"
+sudo apt install -q -y shadowsocks-libev rng-tools supervisor vim htop chromium-chromedriver git jq bash-completion
+source ~/.bashrc
+
 echo "获取配置信息"
 init_config=$(cat /tmp/init.config | base64 -di --decode)
 frp_version=$(echo $init_config | jq -r '.frp_version')
@@ -16,31 +33,17 @@ shadowsockspwd=$(echo $init_config | jq -r '.shadowsockspwd')
 shadowsockscipher=$(echo $init_config | jq -r '.shadowsockscipher')
 shadowsocksservice=$(echo $init_config | jq -r '.shadowsocksservice')
 
-if [ ! "$(command -v bash-completion)" ]; then
-    cat >>~/.bashrc <<-EOF
-if ! shopt -oq posix; then
-  if [ -f /usr/share/bash-completion/bash_completion ]; then
-    . /usr/share/bash-completion/bash_completion
-  elif [ -f /etc/bash_completion ]; then
-    . /etc/bash_completion
-  fi
-fi
-EOF
-    source ~/.bashrc
-fi
-
 echo "安装frpc,并添加守护进程"
-sudo apt install -q -y shadowsocks-libev rng-tools supervisor vim htop chromium-chromedriver git jq bash-completion
 wget -q https://github.com/fatedier/frp/releases/download/v${frp_version}/frp_${frp_version}_linux_amd64.tar.gz
 tar -xzf frp_${frp_version}_linux_amd64.tar.gz
 \cp -rf frp_${frp_version}_linux_amd64/frpc /usr/bin/frpc
 
 if [ ! -d /etc/frp ]; then
-    mkdir -p /etc/frp
+  mkdir -p /etc/frp
 fi
 
 if [ ! -d /var/log/frp ]; then
-    mkdir -p /var/log/frp
+  mkdir -p /var/log/frp
 fi
 
 echo "写入frp配置文件"
