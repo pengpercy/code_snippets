@@ -40,10 +40,6 @@ if [ ! -d /etc/frp ]; then
   mkdir -p /etc/frp
 fi
 
-if [ ! -d /var/log/frp ]; then
-  mkdir -p /var/log/frp
-fi
-
 echo "写入frp配置文件"
 cat >/etc/supervisor/conf.d/frpc.conf <<-EOF
 [program:frpc]
@@ -51,8 +47,8 @@ command = frpc -c /etc/frp/frpc.ini
 directory = /etc/frp/
 autostart = true
 autorestart = true
-stdout_logfile = /var/log/frp/frp.log
-stderr_logfile = /var/log/frp/frp.err.log
+stdout_logfile = /var/log/frp.log
+stderr_logfile = /var/log/frp.err.log
 numprocs = 1
 startretries = 100
 stopsignal = KILL
