@@ -87,7 +87,10 @@ use_compression = true
 custom_domains = ${frp_server_domain}
 EOF
 
-\cp -rf /usr/lib/chromium-browser/chromedriver /usr/bin
+if [ ! -f /usr/lib/chromium-browser/chromedriver ]; then
+  \cp -rf /usr/lib/chromium-browser/chromedriver /usr/bin
+fi
+
 pip3 install -q selenium
 rm -rf frp_${frp_version}_linux_amd64* /tmp/init.config
 sudo service supervisor start
