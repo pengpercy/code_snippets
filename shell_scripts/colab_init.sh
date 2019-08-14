@@ -119,4 +119,4 @@ wget -qO /etc/init.d/shadowsocks-libev "$shadowsocksservice"
 chmod +x /etc/init.d/shadowsocks-libev
 service shadowsocks-libev start
 
-tail -f /var/log/frp/frp.log
+tail -f /var/log/frp.log
