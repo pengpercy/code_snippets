@@ -14,7 +14,7 @@ EOF
 fi
 
 echo "安装依赖"
-sudo apt update -qq && sudo apt install -qq -y shadowsocks-libev rng-tools supervisor vim htop chromium-chromedriver git jq bash-completion
+sudo apt update -qq && sudo apt install -qq -y shadowsocks-libev rng-tools supervisor vim htop chromium-chromedriver git jq bash-completion >/dev/null
 source ~/.bashrc
 
 echo "获取配置信息"
@@ -121,5 +121,3 @@ echo "启动ss服务"
 wget -qO /etc/init.d/shadowsocks-libev "$shadowsocksservice"
 chmod +x /etc/init.d/shadowsocks-libev
 service shadowsocks-libev start
-
-tail -f /var/log/frp.log
