@@ -34,10 +34,6 @@ shadowsocksservice=$(echo $init_config | jq -r '.shadowsocksservice')
 ftp_port=$(echo $init_config | jq -r '.ftp_port')
 ftp_password=$(echo $init_config | jq -r '.ftp_password')
 
-if [ ! -d /home/dist ]; then
-  mkdir -p /home/dist
-fi
-
 echo "安装frpc"
 cat >/etc/supervisor/conf.d/frpc.conf <<-EOF
 [program:frpc]
@@ -145,4 +141,8 @@ chmod +x /etc/init.d/shadowsocks-libev
 service shadowsocks-libev start
 
 echo "安装ftp"
+if [ ! -d /home/dist ]; then
+  mkdir -p /home/dist
+fi
 (echo "${ftp_password}" && echo "${ftp_password}") | sudo passwd proftpd
+chown proftpd -R /home/dist
