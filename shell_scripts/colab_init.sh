@@ -13,7 +13,7 @@ fi
 EOF
 fi
 
-echo "安装依赖"
+echo "安装依赖..."
 sudo apt update -qq && sudo apt install -qq -y shadowsocks-libev rng-tools supervisor vim htop chromium-chromedriver git jq bash-completion proftpd >/dev/null
 source ~/.bashrc
 
