@@ -19,6 +19,7 @@ source ~/.bashrc
 
 echo "设置配置信息"
 init_config=$(cat /tmp/init.config | base64 -di --decode)
+instance_name=$(echo $init_config | jq -r '.instance_name')
 frp_version=$(echo $init_config | jq -r '.frp_version')
 frp_token=$(echo $init_config | jq -r '.frp_token')
 frp_server_domain=$(echo $init_config | jq -r '.frp_server_domain')
@@ -30,17 +31,14 @@ shadowsocksport=$(echo $init_config | jq -r '.shadowsocksport')
 shadowsockspwd=$(echo $init_config | jq -r '.shadowsockspwd')
 shadowsockscipher=$(echo $init_config | jq -r '.shadowsockscipher')
 shadowsocksservice=$(echo $init_config | jq -r '.shadowsocksservice')
+ftp_port=$(echo $init_config | jq -r '.ftp_port')
+ftp_password=$(echo $init_config | jq -r '.ftp_password')
 
-echo "安装frpc"
-wget -q https://github.com/fatedier/frp/releases/download/v${frp_version}/frp_${frp_version}_linux_amd64.tar.gz
-tar -xzf frp_${frp_version}_linux_amd64.tar.gz
-\cp -rf frp_${frp_version}_linux_amd64/frpc /usr/bin/frpc
-
-if [ ! -d /etc/frp ]; then
-  mkdir -p /etc/frp
+if [ ! -d /home/dist ]; then
+  mkdir -p /home/dist
 fi
 
-echo "写入frp配置文件"
+echo "安装frpc"
 cat >/etc/supervisor/conf.d/frpc.conf <<-EOF
 [program:frpc]
 command = frpc -c /etc/frp/frpc.ini
@@ -55,20 +53,28 @@ stopsignal = KILL
 stopwaitsecs = 10
 EOF
 
+wget -q https://github.com/fatedier/frp/releases/download/v${frp_version}/frp_${frp_version}_linux_amd64.tar.gz
+tar -xzf frp_${frp_version}_linux_amd64.tar.gz
+\cp -rf frp_${frp_version}_linux_amd64/frpc /usr/bin/frpc
+
+if [ ! -d /etc/frp ]; then
+  mkdir -p /etc/frp
+fi
+
 cat >/etc/frp/frpc.ini <<-EOF
 [common]
 server_addr = ${frp_server_addr}
 server_port = ${frp_server_port}
 token = ${frp_token}
 
-[colab.ssh]
+[colab.${instance_name}.ssh]
 type = tcp
 local_ip = localhost
 local_port = 22
 remote_port = ${ssh_port}
 custom_domains = ${frp_server_domain}
 
-[colab.ss]
+[colab.${instance_name}.ss]
 type = tcp
 local_ip = localhost
 local_port = ${shadowsocksport}
@@ -77,7 +83,25 @@ use_encryption = true
 use_compression = true
 custom_domains = ${frp_server_domain}
 
-[colab.ss.udp]
+[colab.${instance_name}.ftp]
+type = tcp
+local_ip = localhost
+local_port = 21
+remote_port = ${ftp_port}
+use_encryption = true
+use_compression = true
+custom_domains = ${frp_server_domain}
+
+[colab.${instance_name}.ftp.udp]
+type = udp
+local_ip = localhost
+local_port = 21
+remote_port = ${ftp_port}
+use_encryption = true
+use_compression = true
+custom_domains = ${frp_server_domain}
+
+[colab.${instance_name}.ss.udp]
 type = udp
 local_ip = localhost
 local_port = ${shadowsocksport}
@@ -86,16 +110,16 @@ use_encryption = true
 use_compression = true
 custom_domains = ${frp_server_domain}
 EOF
-
-if [ ! -f /usr/lib/chromium-browser/chromedriver ]; then
-  \cp -rf /usr/lib/chromium-browser/chromedriver /usr/bin
-fi
-
-pip3 install -q selenium
 rm -rf frp_${frp_version}_linux_amd64* /tmp/init.config
 sudo service supervisor start
 
-echo "设置ssh配置文件，开启远程访问权限"
+echo "安装selenium"
+if [ ! -f /usr/lib/chromium-browser/chromedriver ]; then
+  \cp -rf /usr/lib/chromium-browser/chromedriver /usr/bin
+fi
+pip3 install -q selenium >/dev/null
+
+echo "安装ssh"
 sed -re 's/^(\#)(Port)([[:space:]]+)(.*)/\2\3\4/' /etc/ssh/sshd_config >~/temp.cnf && mv -f ~/temp.cnf /etc/ssh/sshd_config
 sed -re 's/^(\#)(ListenAddress)([[:space:]]+)(0\.0\.0\.0)(.*)/\2\3\4/' /etc/ssh/sshd_config >~/temp.cnf && mv -f ~/temp.cnf /etc/ssh/sshd_config
 sed -re 's/^(\#)(PermitRootLogin)([[:space:]]+)(prohibit-password)(.*)/\2\3\4/' /etc/ssh/sshd_config >~/temp.cnf && mv -f ~/temp.cnf /etc/ssh/sshd_config
@@ -116,8 +140,9 @@ cat >/etc/shadowsocks-libev/config.json <<-EOF
     "mode":"tcp_and_udp"
 }
 EOF
-
-echo "启动ss服务"
 wget -qO /etc/init.d/shadowsocks-libev "$shadowsocksservice"
 chmod +x /etc/init.d/shadowsocks-libev
 service shadowsocks-libev start
+
+echo "安装ftp"
+(echo "${ftp_password}" && echo "${ftp_password}") | sudo passwd proftpd
