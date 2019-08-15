@@ -86,7 +86,7 @@ custom_domains = ${frp_server_domain}
 [colab.${instance_name}.ftp]
 type = tcp
 local_ip = localhost
-local_port = 21
+local_port = ${ftp_port}
 remote_port = ${ftp_port}
 use_encryption = true
 use_compression = true
@@ -95,7 +95,7 @@ custom_domains = ${frp_server_domain}
 [colab.${instance_name}.ftp.udp]
 type = udp
 local_ip = localhost
-local_port = 21
+local_port = ${ftp_port}
 remote_port = ${ftp_port}
 use_encryption = true
 use_compression = true
