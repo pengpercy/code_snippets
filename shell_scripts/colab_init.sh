@@ -14,10 +14,10 @@ EOF
 fi
 
 echo "安装依赖"
-sudo apt update -qq && sudo apt install -qq -y shadowsocks-libev rng-tools supervisor vim htop chromium-chromedriver git jq bash-completion >/dev/null
+sudo apt update -qq && sudo apt install -qq -y shadowsocks-libev rng-tools supervisor vim htop chromium-chromedriver git jq bash-completion proftpd >/dev/null
 source ~/.bashrc
 
-echo "获取配置信息"
+echo "设置配置信息"
 init_config=$(cat /tmp/init.config | base64 -di --decode)
 frp_version=$(echo $init_config | jq -r '.frp_version')
 frp_token=$(echo $init_config | jq -r '.frp_token')
@@ -31,7 +31,7 @@ shadowsockspwd=$(echo $init_config | jq -r '.shadowsockspwd')
 shadowsockscipher=$(echo $init_config | jq -r '.shadowsockscipher')
 shadowsocksservice=$(echo $init_config | jq -r '.shadowsocksservice')
 
-echo "安装frpc,并添加守护进程"
+echo "安装frpc"
 wget -q https://github.com/fatedier/frp/releases/download/v${frp_version}/frp_${frp_version}_linux_amd64.tar.gz
 tar -xzf frp_${frp_version}_linux_amd64.tar.gz
 \cp -rf frp_${frp_version}_linux_amd64/frpc /usr/bin/frpc
