@@ -82,7 +82,7 @@ custom_domains = ${frp_server_domain}
 [colab.${instance_name}.ftp]
 type = tcp
 local_ip = localhost
-local_port = ${ftp_port}
+local_port = 21
 remote_port = ${ftp_port}
 use_encryption = true
 use_compression = true
@@ -91,7 +91,7 @@ custom_domains = ${frp_server_domain}
 [colab.${instance_name}.ftp.udp]
 type = udp
 local_ip = localhost
-local_port = ${ftp_port}
+local_port = 21
 remote_port = ${ftp_port}
 use_encryption = true
 use_compression = true
@@ -120,7 +120,7 @@ sed -re 's/^(\#)(Port)([[:space:]]+)(.*)/\2\3\4/' /etc/ssh/sshd_config >~/temp.c
 sed -re 's/^(\#)(ListenAddress)([[:space:]]+)(0\.0\.0\.0)(.*)/\2\3\4/' /etc/ssh/sshd_config >~/temp.cnf && mv -f ~/temp.cnf /etc/ssh/sshd_config
 sed -re 's/^(\#)(PermitRootLogin)([[:space:]]+)(prohibit-password)(.*)/\2\3\4/' /etc/ssh/sshd_config >~/temp.cnf && mv -f ~/temp.cnf /etc/ssh/sshd_config
 sed -re 's/^(PermitRootLogin)([[:space:]]+)prohibit-password/\1\2yes/' /etc/ssh/sshd_config >~/temp.cnf && mv -f ~/temp.cnf /etc/ssh/sshd_config && (echo "${ssh_password}" && echo "${ssh_password}") | sudo passwd root
-sudo service ssh restart
+service ssh restart
 
 echo "安装shadowsocks"
 cat >/etc/shadowsocks-libev/config.json <<-EOF
@@ -146,3 +146,4 @@ if [ ! -d /home/dist ]; then
 fi
 (echo "${ftp_password}" && echo "${ftp_password}") | sudo passwd proftpd
 chown proftpd -R /home/dist
+service proftpd start
