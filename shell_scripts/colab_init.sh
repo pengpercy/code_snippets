@@ -14,7 +14,7 @@ EOF
 fi
 
 echo "安装依赖..."
-sudo apt update -qq && sudo apt install -qq -y shadowsocks-libev rng-tools supervisor vim htop chromium-chromedriver git jq bash-completion proftpd >/dev/null
+sudo apt update -qq && sudo apt install -qq -y shadowsocks-libev rng-tools supervisor vim htop chromium-chromedriver git jq bash-completion ssh >/dev/null
 source ~/.bashrc
 
 echo "设置配置信息"
@@ -31,8 +31,6 @@ shadowsocksport=$(echo $init_config | jq -r '.shadowsocksport')
 shadowsockspwd=$(echo $init_config | jq -r '.shadowsockspwd')
 shadowsockscipher=$(echo $init_config | jq -r '.shadowsockscipher')
 shadowsocksservice=$(echo $init_config | jq -r '.shadowsocksservice')
-ftp_port=$(echo $init_config | jq -r '.ftp_port')
-ftp_password=$(echo $init_config | jq -r '.ftp_password')
 
 echo "安装frpc"
 cat >/etc/supervisor/conf.d/frpc.conf <<-EOF
@@ -139,11 +137,3 @@ EOF
 wget -qO /etc/init.d/shadowsocks-libev "$shadowsocksservice"
 chmod +x /etc/init.d/shadowsocks-libev
 service shadowsocks-libev start
-
-echo "安装ftp"
-if [ ! -d /home/dist ]; then
-  mkdir -p /home/dist
-fi
-(echo "${ftp_password}" && echo "${ftp_password}") | sudo passwd proftpd
-chown proftpd -R /home/dist
-service proftpd start
