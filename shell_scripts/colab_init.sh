@@ -74,13 +74,13 @@ custom_domains = ${frp_server_domain}
 EOF
 rm -rf frp_${frp_version}_linux_amd64* /tmp/init.
 
-echo "安装colab_daemon"
 if [ ! -d /opt/colab_daemon ]; then
   echo "安装selenium"
   if [ ! -f /usr/lib/chromium-browser/chromedriver ]; then
     \cp -rf /usr/lib/chromium-browser/chromedriver /usr/bin
   fi
   pip3 install -q selenium pyperclip apscheduler lxml >/dev/null
+  echo "安装colab_daemon"
   mkdir -p /opt/colab_daemon
   wget -qO /opt/colab_daemon/app.py  https://raw.githubusercontent.com/pengpercy/code_snippets/master/shell_scripts/colab_daemon.py
 fi
@@ -113,6 +113,7 @@ startretries = 100
 stopsignal = KILL
 stopwaitsecs = 10
 EOF
+
 sudo service supervisor start
 
 echo "安装ssh"
