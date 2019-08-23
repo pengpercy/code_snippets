@@ -33,20 +33,6 @@ shadowsockscipher=$(echo $init_config | jq -r '.shadowsockscipher')
 shadowsocksservice=$(echo $init_config | jq -r '.shadowsocksservice')
 
 echo "安装frpc"
-cat >/etc/supervisor/conf.d/frpc.conf <<-EOF
-[program:frpc]
-command = frpc -c /etc/frp/frpc.ini
-directory = /etc/frp/
-autostart = true
-autorestart = true
-stdout_logfile = /var/log/frp.log
-stderr_logfile = /var/log/frp.err.log
-numprocs = 1
-startretries = 100
-stopsignal = KILL
-stopwaitsecs = 10
-EOF
-
 wget -q https://github.com/fatedier/frp/releases/download/v${frp_version}/frp_${frp_version}_linux_amd64.tar.gz
 tar -xzf frp_${frp_version}_linux_amd64.tar.gz
 \cp -rf frp_${frp_version}_linux_amd64/frpc /usr/bin/frpc
@@ -86,14 +72,47 @@ use_encryption = true
 use_compression = true
 custom_domains = ${frp_server_domain}
 EOF
-rm -rf frp_${frp_version}_linux_amd64* /tmp/init.config
+rm -rf frp_${frp_version}_linux_amd64* /tmp/init.
+
+echo "安装colab_daemon"
+if [ ! -d /opt/colab_daemon ]; then
+  mkdir -p /etc/colab_daemon
+
+fi
+
+echo "配置supervisor"
+cat >/etc/supervisor/conf.d/frpc.conf <<-EOF
+[program:frpc]
+command = frpc -c /etc/frp/frpc.ini
+directory = /etc/frp/
+autostart = true
+autorestart = true
+stdout_logfile = /var/log/frp.log
+stderr_logfile = /var/log/frp.err.log
+numprocs = 1
+startretries = 100
+stopsignal = KILL
+stopwaitsecs = 10
+
+[program:colab_daemon]
+command = python3 /opt/colab_daemon/app.py
+directory = /opt/colab_daemon
+autostart = true
+autorestart = true
+stdout_logfile = /var/log/colab_daemon.log
+stderr_logfile = /var/log/colab_daemon.err.log
+numprocs = 1
+startretries = 100
+stopsignal = KILL
+stopwaitsecs = 10
+EOF
 sudo service supervisor start
 
 echo "安装selenium"
 if [ ! -f /usr/lib/chromium-browser/chromedriver ]; then
   \cp -rf /usr/lib/chromium-browser/chromedriver /usr/bin
 fi
-pip3 install -q selenium pyperclip json apscheduler >/dev/null
+pip3 install -q selenium pyperclip json apscheduler lxml >/dev/null
 
 echo "安装ssh"
 sed -re 's/^(\#)(Port)([[:space:]]+)(.*)/\2\3\4/' /etc/ssh/sshd_config >~/temp.cnf && mv -f ~/temp.cnf /etc/ssh/sshd_config
