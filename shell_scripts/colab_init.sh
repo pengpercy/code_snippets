@@ -76,8 +76,8 @@ rm -rf frp_${frp_version}_linux_amd64* /tmp/init.
 
 echo "安装colab_daemon"
 if [ ! -d /opt/colab_daemon ]; then
-  mkdir -p /etc/colab_daemon
-
+  mkdir -p /opt/colab_daemon
+  wget -qO /opt/colab_daemon/app.py  https://raw.githubusercontent.com/pengpercy/code_snippets/master/shell_scripts/colab_daemon.py
 fi
 
 echo "配置supervisor"
