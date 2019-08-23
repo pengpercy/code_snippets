@@ -79,7 +79,7 @@ if [ ! -d /opt/colab_daemon ]; then
   if [ ! -f /usr/lib/chromium-browser/chromedriver ]; then
     \cp -rf /usr/lib/chromium-browser/chromedriver /usr/bin
   fi
-  pip3 install -q selenium pyperclip apscheduler lxml xsel utility >/dev/null
+  pip3 install -q selenium pyperclip apscheduler lxml >/dev/null
   echo "安装colab_daemon"
   mkdir -p /opt/colab_daemon
   wget -qO /opt/colab_daemon/app.py  https://raw.githubusercontent.com/pengpercy/code_snippets/master/shell_scripts/colab_daemon.py
