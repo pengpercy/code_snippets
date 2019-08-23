@@ -98,7 +98,9 @@ numprocs = 1
 startretries = 100
 stopsignal = KILL
 stopwaitsecs = 10
+EOF
 
+cat >/etc/supervisor/conf.d/colab_daemon.conf <<-EOF
 [program:colab_daemon]
 command = python3 /opt/colab_daemon/app.py
 directory = /opt/colab_daemon
@@ -112,7 +114,6 @@ stopsignal = KILL
 stopwaitsecs = 10
 EOF
 sudo service supervisor start
-
 
 echo "安装ssh"
 sed -re 's/^(\#)(Port)([[:space:]]+)(.*)/\2\3\4/' /etc/ssh/sshd_config >~/temp.cnf && mv -f ~/temp.cnf /etc/ssh/sshd_config
