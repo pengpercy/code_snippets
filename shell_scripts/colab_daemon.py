@@ -1,7 +1,7 @@
 import time
 from datetime import datetime, timezone, timedelta
 import pyperclip
-from apscheduler.schedulers.blocking import BlockingScheduler
+from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.cron import CronTrigger
 from lxml import etree
 from selenium import webdriver
@@ -32,7 +32,7 @@ def get_driver():
 
 
 is_running = True
-scheduler = BlockingScheduler()
+scheduler = BackgroundScheduler()
 globel_driver = get_driver()
 
 
@@ -52,24 +52,20 @@ def login(driver):
     script_url = "https://www.google.com?hl=en"
     driver.get(script_url)
     driver = read_cookies(driver)
+    # script_url = "https://colab.research.google.com/drive/1rK5rccngm0UjivZ5knxE47KlkPdyB0kt?hl=en"
     driver.get(get_config()["script_url"])
-    code_input_element = WebDriverWait(driver, 100).until(
-        EC.presence_of_element_located((By.TAG_NAME, "textarea")))
+    code_input_element = WebDriverWait(driver, 100).until(EC.presence_of_element_located((By.TAG_NAME, "textarea")))
     code_input_element.send_keys(Keys.CONTROL, 'a')
     init_script = code_input_element.get_attribute('value')
     code_input_element.send_keys(Keys.BACKSPACE)
-    cookies_code = '!echo \'{}\' >/tmp/cookies.json'.format(
-        json.dumps(driver.get_cookies()))
+    cookies_code = '!echo \'{}\' >/tmp/cookies.json'.format(json.dumps(driver.get_cookies()))
     print("cookie代码：", cookies_code)
-    pyperclip.copy(
-        '!echo \'{}\' >/tmp/cookies.json'.format(json.dumps(driver.get_cookies())))
+    pyperclip.copy('!echo \'{}\' >/tmp/cookies.json'.format(json.dumps(driver.get_cookies())))
     code_input_element.send_keys(Keys.CONTROL, 'v')
     code_run_seletor = "div.main-content > div.codecell-input-output > div.inputarea.horizontal.layout.code > div.cell-gutter > div > div"
-    code_run_element = WebDriverWait(driver, 100).until(
-        EC.element_to_be_clickable((By.CSS_SELECTOR, code_run_seletor)))
+    code_run_element = WebDriverWait(driver, 100).until(EC.element_to_be_clickable((By.CSS_SELECTOR, code_run_seletor)))
     code_run_element.click()
-    code_run_element = WebDriverWait(driver, 100).until(
-        EC.element_to_be_clickable((By.CSS_SELECTOR, code_run_seletor)))
+    code_run_element = WebDriverWait(driver, 100).until(EC.element_to_be_clickable((By.CSS_SELECTOR, code_run_seletor)))
     driver.find_element_by_css_selector(
         'div.main-content > div.codecell-input-output > div.inputarea.horizontal.layout.code > div.editor.flex > div > div.CodeMirror-scroll > div.CodeMirror-sizer > div > div').click()
     code_input_element.send_keys(Keys.CONTROL, 'a')
@@ -106,12 +102,11 @@ def read_cookies(driver):
     return driver
 
 
-@scheduler.scheduled_job(CronTrigger.from_crontab(get_config()["crontab"]))
+# @scheduler.scheduled_job("cron", CronTrigger.from_crontab(get_config()["crontab"]))
 def reset_job():
     write_log("开始重置")
     is_running = False
-    globel_driver.find_element_by_xpath(
-        '//*[@id="runtime-menu-button"]/div/div/div[1]').click()
+    globel_driver.find_element_by_xpath('//*[@id="runtime-menu-button"]/div/div/div[1]').click()
     globel_driver.find_element_by_xpath('//*[@id=":21"]').click()
     globel_driver.find_element_by_xpath('//*[@id="ok"]').click()
     time.sleep(5)
@@ -168,6 +163,7 @@ def run_deamon(driver):
 
 
 if __name__ == "__main__":
+    scheduler.add_job(reset_job, 'cron', hour=get_config()["crontab"])
     scheduler.start()
     login(globel_driver)
     run_deamon(globel_driver)
