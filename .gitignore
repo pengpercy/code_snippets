@@ -1,3 +1,4 @@
 shell_scripts/*.json
 shell_scripts/test*.sh
 shell_scripts/tmp.*
+.vscode/*
