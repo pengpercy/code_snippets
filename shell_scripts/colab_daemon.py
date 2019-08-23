@@ -1,8 +1,6 @@
 import time
 from datetime import datetime, timezone, timedelta
-import pyperclip
 from apscheduler.schedulers.background import BackgroundScheduler
-from apscheduler.triggers.cron import CronTrigger
 from lxml import etree
 from selenium import webdriver
 from selenium.webdriver.common.by import By
