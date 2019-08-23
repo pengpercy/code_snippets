@@ -93,7 +93,7 @@ echo "安装selenium"
 if [ ! -f /usr/lib/chromium-browser/chromedriver ]; then
   \cp -rf /usr/lib/chromium-browser/chromedriver /usr/bin
 fi
-pip3 install -q selenium >/dev/null
+pip3 install -q selenium pyperclip json >/dev/null
 
 echo "安装ssh"
 sed -re 's/^(\#)(Port)([[:space:]]+)(.*)/\2\3\4/' /etc/ssh/sshd_config >~/temp.cnf && mv -f ~/temp.cnf /etc/ssh/sshd_config
