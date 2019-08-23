@@ -59,8 +59,7 @@ def login(driver):
     init_script = code_input_element.get_attribute('value')
     code_input_element.send_keys(Keys.BACKSPACE)
     cookies_code = '!echo \'{}\' >/tmp/cookies.json'.format(json.dumps(driver.get_cookies()))
-    pyperclip.copy('!echo \'{}\' >/tmp/cookies.json'.format(json.dumps(driver.get_cookies())))
-    code_input_element.send_keys(Keys.CONTROL, 'v')
+    code_input_element.send_keys(cookies_code)
     code_run_seletor = "div.main-content > div.codecell-input-output > div.inputarea.horizontal.layout.code > div.cell-gutter > div > div"
     code_run_element = WebDriverWait(driver, 100).until(EC.element_to_be_clickable((By.CSS_SELECTOR, code_run_seletor)))
     code_run_element.click()
@@ -69,8 +68,7 @@ def login(driver):
         'div.main-content > div.codecell-input-output > div.inputarea.horizontal.layout.code > div.editor.flex > div > div.CodeMirror-scroll > div.CodeMirror-sizer > div > div').click()
     code_input_element.send_keys(Keys.CONTROL, 'a')
     code_input_element.send_keys(Keys.BACKSPACE)
-    pyperclip.copy(init_script)
-    code_input_element.send_keys(Keys.CONTROL, 'v')
+    code_input_element.send_keys(init_script)
     code_run_element.click()
 
 
