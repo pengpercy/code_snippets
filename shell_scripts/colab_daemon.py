@@ -59,7 +59,6 @@ def login(driver):
     init_script = code_input_element.get_attribute('value')
     code_input_element.send_keys(Keys.BACKSPACE)
     cookies_code = '!echo \'{}\' >/tmp/cookies.json'.format(json.dumps(driver.get_cookies()))
-    print("cookie代码：", cookies_code)
     pyperclip.copy('!echo \'{}\' >/tmp/cookies.json'.format(json.dumps(driver.get_cookies())))
     code_input_element.send_keys(Keys.CONTROL, 'v')
     code_run_seletor = "div.main-content > div.codecell-input-output > div.inputarea.horizontal.layout.code > div.cell-gutter > div > div"
