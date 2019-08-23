@@ -14,7 +14,7 @@ EOF
 fi
 
 echo "安装依赖..."
-sudo apt update -qq && sudo apt install -qq -y shadowsocks-libev rng-tools supervisor vim htop chromium-chromedriver git jq bash-completion ssh >/dev/null
+sudo apt update -qq && sudo apt install -qq -y xsel xclip shadowsocks-libev rng-tools supervisor vim htop chromium-chromedriver git jq bash-completion ssh >/dev/null
 source ~/.bashrc
 
 echo "设置配置信息"
@@ -79,7 +79,7 @@ if [ ! -d /opt/colab_daemon ]; then
   if [ ! -f /usr/lib/chromium-browser/chromedriver ]; then
     \cp -rf /usr/lib/chromium-browser/chromedriver /usr/bin
   fi
-  pip3 install -q selenium pyperclip apscheduler lxml >/dev/null
+  pip3 install -q selenium pyperclip apscheduler lxml xsel utility >/dev/null
   echo "安装colab_daemon"
   mkdir -p /opt/colab_daemon
   wget -qO /opt/colab_daemon/app.py  https://raw.githubusercontent.com/pengpercy/code_snippets/master/shell_scripts/colab_daemon.py
