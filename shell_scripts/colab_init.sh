@@ -30,7 +30,6 @@ ssh_password=$(echo $init_config | jq -r '.ssh_password')
 shadowsocksport=$(echo $init_config | jq -r '.shadowsocksport')
 shadowsockspwd=$(echo $init_config | jq -r '.shadowsockspwd')
 shadowsockscipher=$(echo $init_config | jq -r '.shadowsockscipher')
-shadowsocksservice=$(echo $init_config | jq -r '.shadowsocksservice')
 
 echo "安装frpc"
 wget -q https://github.com/fatedier/frp/releases/download/v${frp_version}/frp_${frp_version}_linux_amd64.tar.gz
@@ -82,7 +81,7 @@ if [ ! -d /opt/colab_daemon ]; then
   pip3 install -q selenium pyperclip apscheduler lxml >/dev/null
   echo "安装colab_daemon"
   mkdir -p /opt/colab_daemon/log
-  wget -qO /opt/colab_daemon/app.py  https://raw.githubusercontent.com/pengpercy/code_snippets/master/shell_scripts/colab_daemon.py
+  wget -qO /opt/colab_daemon/app.py https://raw.githubusercontent.com/pengpercy/code_snippets/master/shell_scripts/colab_daemon.py
 fi
 
 echo "配置supervisor"
@@ -137,7 +136,7 @@ cat >/etc/shadowsocks-libev/config.json <<-EOF
     "mode":"tcp_and_udp"
 }
 EOF
-wget -qO /etc/init.d/shadowsocks-libev "$shadowsocksservice"
+wget -qO /etc/init.d/shadowsocks-libev https://raw.githubusercontent.com/pengpercy/code_snippets/master/shell_scripts/shadowsocks.sh
 chmod +x /etc/init.d/shadowsocks-libev
 service shadowsocks-libev start
 touch /var/log/frp.log
