@@ -113,7 +113,9 @@ stopsignal = KILL
 stopwaitsecs = 10
 EOF
 
-sudo service supervisor start
+if [ ! -f /var/log/frp.log ]; then
+  sudo service supervisor start
+fi
 
 echo "安装ssh"
 sed -re 's/^(\#)(Port)([[:space:]]+)(.*)/\2\3\4/' /etc/ssh/sshd_config >~/temp.cnf && mv -f ~/temp.cnf /etc/ssh/sshd_config
