@@ -156,7 +156,7 @@ def run_deamon(driver):
                     time.sleep(1)
                     duration += 1
                 if duration % 100 == 0:
-                    print("当前duration：", duration)
+                    write_log("当前duration：{}".format(duration))
                 continue
             except Exception as e:
                 error_count += 1
