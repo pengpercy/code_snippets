@@ -38,7 +38,8 @@ def write_log(message):
     """记录日志"""
     timenow = datetime.utcnow().replace(tzinfo=timezone.utc).astimezone(
         timezone(timedelta(hours=8)))
-    file_name = './log/colab_daemon{}.log'.format(timenow.strftime("%Y%m"))
+    file_name = './log/colab_daemon{}.log'.format(
+        timenow.strftime("%Y%m"))
     with open(file_name, 'a+', encoding='utf-8') as f:
         message = '{} {}'.format(timenow.strftime("%m-%d %H:%M:%S"), message)
         print(message)
@@ -50,24 +51,32 @@ def login(driver):
     script_url = "https://www.google.com?hl=en"
     driver.get(script_url)
     driver = read_cookies(driver)
-    # script_url = "https://colab.research.google.com/drive/1rK5rccngm0UjivZ5knxE47KlkPdyB0kt?hl=en"
     driver.get(get_config()["script_url"])
-    code_input_element = WebDriverWait(driver, 100).until(EC.presence_of_element_located((By.TAG_NAME, "textarea")))
+    code_input_element = WebDriverWait(driver, 100).until(
+        EC.presence_of_element_located((By.TAG_NAME, "textarea")))
     code_input_element.send_keys(Keys.CONTROL, 'a')
     init_script = code_input_element.get_attribute('value')
     code_input_element.send_keys(Keys.BACKSPACE)
-    cookies_code = '!echo \'{}\' >/tmp/cookies.json'.format(json.dumps(driver.get_cookies()))
+    cookies_code = '!echo \'{}\' >/tmp/cookies.json'.format(
+        json.dumps(driver.get_cookies()))
     code_input_element.send_keys(cookies_code)
     code_run_seletor = "div.main-content > div.codecell-input-output > div.inputarea.horizontal.layout.code > div.cell-gutter > div > div"
-    code_run_element = WebDriverWait(driver, 100).until(EC.element_to_be_clickable((By.CSS_SELECTOR, code_run_seletor)))
+    code_run_element = WebDriverWait(driver, 100).until(
+        EC.element_to_be_clickable((By.CSS_SELECTOR, code_run_seletor)))
     code_run_element.click()
-    code_run_element = WebDriverWait(driver, 100).until(EC.element_to_be_clickable((By.CSS_SELECTOR, code_run_seletor)))
+    code_run_element = WebDriverWait(driver, 100).until(
+        EC.element_to_be_clickable((By.CSS_SELECTOR, code_run_seletor)))
     driver.find_element_by_css_selector(
         'div.main-content > div.codecell-input-output > div.inputarea.horizontal.layout.code > div.editor.flex > div > div.CodeMirror-scroll > div.CodeMirror-sizer > div > div').click()
     code_input_element.send_keys(Keys.CONTROL, 'a')
     code_input_element.send_keys(Keys.BACKSPACE)
     code_input_element.send_keys(init_script)
     code_run_element.click()
+    time.sleep(2)
+    tree = etree.HTML(driver.page_source)
+    statues_description = tree.xpath(
+        '//div[2]/paper-icon-button/@title')[0]
+    write_log('当前状态:'+statues_description)
 
 
 def fresh_page(driver):
@@ -101,7 +110,8 @@ def read_cookies(driver):
 def reset_job():
     write_log("开始重置")
     is_running = False
-    globel_driver.find_element_by_xpath('//*[@id="runtime-menu-button"]/div/div/div[1]').click()
+    globel_driver.find_element_by_xpath(
+        '//*[@id="runtime-menu-button"]/div/div/div[1]').click()
     globel_driver.find_element_by_xpath('//*[@id=":21"]').click()
     globel_driver.find_element_by_xpath('//*[@id="ok"]').click()
     time.sleep(5)
@@ -135,9 +145,12 @@ def run_deamon(driver):
                     error_count = 0
                     driver = fresh_page(driver)
                     continue
-                if 'Run cell' in statues_description and run_element:
-                    write_log('点击运行')
-                    run_element.click()
+                if 'Run cell' in statues_description and 'currently executing' not in statues_description and run_element:
+                    write_log('点击运行：'+statues_description)
+                    code_run_seletor = "div.main-content > div.codecell-input-output > div.inputarea.horizontal.layout.code > div.cell-gutter > div > div"
+                    code_run_element = WebDriverWait(driver, 100).until(
+                        EC.element_to_be_clickable((By.CSS_SELECTOR, code_run_seletor)))
+                    code_run_element.click()
                     time.sleep(50)
                 elif 'currently executing' in statues_description:
                     time.sleep(1)
