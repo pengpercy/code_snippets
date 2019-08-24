@@ -110,6 +110,10 @@ def reset_job():
     time.sleep(5)
     fresh_page(globel_driver)
 
+def get_running_status(driver):
+    """获取最新状态"""
+    tree = etree.HTML(driver.page_source)
+    return tree.xpath('//div[2]/paper-icon-button/@title')[0]
 
 def run_deamon(driver):
     save_cookie(driver)
@@ -124,8 +128,7 @@ def run_deamon(driver):
                 if len(tree.xpath('//div[2]/paper-icon-button/@title')) == 0:
                     time.sleep(0.1)
                     continue
-                statues_description = tree.xpath(
-                    '//div[2]/paper-icon-button/@title')[0]
+                statues_description = get_running_status(driver)
                 run_seletor = "div.main-content > div.codecell-input-output > div.inputarea.horizontal.layout.code > div.cell-gutter > div > div"
                 run_element = WebDriverWait(driver, 1).until(
                     EC.element_to_be_clickable((By.CSS_SELECTOR, run_seletor)))
@@ -144,13 +147,13 @@ def run_deamon(driver):
                     code_run_seletor = "div.main-content > div.codecell-input-output > div.inputarea.horizontal.layout.code > div.cell-gutter > div > div > div.cell-execution-indicator"
                     code_run_element = WebDriverWait(driver, 100).until(EC.element_to_be_clickable((By.CSS_SELECTOR, code_run_seletor)))
                     code_run_element.click()
-                    write_log('点击运行后:'+statues_description)
+                    write_log('点击运行后:'+get_running_status(driver))
                     time.sleep(50)
-                elif 'currently executing' in statues_description:
+                elif 'currently executing' in get_running_status(driver):
                     time.sleep(1)
                     duration += 1
                 if duration % 100 == 0:
-                    write_log("当前duration：{}, {}".format(duration,statues_description))
+                    write_log("当前duration：{}, {}".format(duration,get_running_status(driver)))
                 continue
             except Exception as e:
                 error_count += 1
