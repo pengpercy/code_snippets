@@ -74,8 +74,7 @@ def login(driver):
     code_run_element.click()
     time.sleep(2)
     tree = etree.HTML(driver.page_source)
-    statues_description = tree.xpath(
-        '//div[2]/paper-icon-button/@title')[0]
+    statues_description = tree.xpath('//div[2]/paper-icon-button/@title')[0]
     write_log('当前状态:'+statues_description)
 
 
