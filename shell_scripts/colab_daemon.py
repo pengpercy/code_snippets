@@ -113,14 +113,13 @@ def reset_job():
 
 
 def run_deamon(driver):
-    save_cookie(driver)
     duration = 0
     error_count = 0
     write_log("开始进程守护")
     while is_running:
         for i in range(100):
             try:
-                save_cookie(globel_driver)
+                save_cookie(driver)
                 tree = etree.HTML(driver.page_source)
                 if len(tree.xpath('//div[2]/paper-icon-button/@title')) == 0:
                     time.sleep(0.1)
