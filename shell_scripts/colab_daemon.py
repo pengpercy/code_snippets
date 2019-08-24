@@ -129,7 +129,7 @@ def run_deamon(driver):
                 run_element = WebDriverWait(driver, 1).until(
                     EC.element_to_be_clickable((By.CSS_SELECTOR, run_seletor)))
                 if duration > 3600 or (
-                        'Run cell' in statues_description
+                        'currently executing' not in statues_description
                         and not run_element) or len(
                     tree.xpath("/html/body/iron-overlay-backdrop")
                 ) > 0 or error_count > 10:
@@ -141,8 +141,7 @@ def run_deamon(driver):
                     write_log('点击运行前'+statues_description)
                     code_run_seletor = "div.main-content > div.codecell-input-output > div.inputarea.horizontal.layout.code > div.cell-gutter > div > div > div.cell-execution-indicator"
                     code_run_element = WebDriverWait(driver, 100).until(EC.element_to_be_clickable((By.CSS_SELECTOR, code_run_seletor)))
-                    #code_run_element.click()
-                    code_run_element.send_keys(Keys.CONTROL,Keys.ENTER)
+                    code_run_element.click()
                     time.sleep(5)
                     write_log('点击运行后:'+get_running_status(driver))
                     time.sleep(50)
