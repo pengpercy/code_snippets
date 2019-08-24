@@ -45,6 +45,10 @@ def write_log(message):
         f.write(message + "\n")
         f.close()
 
+def get_running_status(driver):
+    """获取最新状态"""
+    tree = etree.HTML(driver.page_source)
+    return tree.xpath('//div[2]/paper-icon-button/@title')[0]
 
 def login(driver):
     script_url = "https://www.google.com?hl=en"
@@ -68,9 +72,7 @@ def login(driver):
     code_input_element.send_keys(Keys.BACKSPACE)
     code_input_element.send_keys(init_script)
     code_run_element.click()
-    tree = etree.HTML(driver.page_source)
-    statues_description = tree.xpath('//div[2]/paper-icon-button/@title')[0]
-    write_log('当前状态:'+statues_description)
+    write_log('当前状态:'+get_running_status(driver))
 
 
 def fresh_page(driver):
@@ -110,10 +112,6 @@ def reset_job():
     time.sleep(5)
     fresh_page(globel_driver)
 
-def get_running_status(driver):
-    """获取最新状态"""
-    tree = etree.HTML(driver.page_source)
-    return tree.xpath('//div[2]/paper-icon-button/@title')[0]
 
 def run_deamon(driver):
     save_cookie(driver)
