@@ -50,6 +50,7 @@ def login(driver):
     script_url = "https://www.google.com?hl=en"
     driver.get(script_url)
     driver = read_cookies(driver)
+    # script_url = "https://colab.research.google.com/drive/1rK5rccngm0UjivZ5knxE47KlkPdyB0kt?hl=en"
     driver.get(get_config()["script_url"])
     code_input_element = WebDriverWait(driver, 100).until(EC.presence_of_element_located((By.TAG_NAME, "textarea")))
     code_input_element.send_keys(Keys.CONTROL, 'a')
@@ -149,7 +150,7 @@ def run_deamon(driver):
                     time.sleep(1)
                     duration += 1
                 if duration % 100 == 0:
-                    write_log("当前duration：{}".format(duration))
+                    write_log("当前duration：{}, {}".format(duration,statues_description))
                 continue
             except Exception as e:
                 error_count += 1
