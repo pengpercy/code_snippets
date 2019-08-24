@@ -38,33 +38,40 @@ def write_log(message):
     """记录日志"""
     timenow = datetime.utcnow().replace(tzinfo=timezone.utc).astimezone(
         timezone(timedelta(hours=8)))
-    file_name = './log/colab_daemon{}.log'.format(timenow.strftime("%Y%m"))
+    file_name = './log/colab_daemon{}.log'.format(
+        timenow.strftime("%Y%m"))
     with open(file_name, 'a+', encoding='utf-8') as f:
         message = '{} {}'.format(timenow.strftime("%m-%d %H:%M:%S"), message)
         print(message)
         f.write(message + "\n")
         f.close()
 
+
 def get_running_status(driver):
     """获取最新状态"""
     tree = etree.HTML(driver.page_source)
     return tree.xpath('//div[2]/paper-icon-button/@title')[0]
+
 
 def login(driver):
     script_url = "https://www.google.com?hl=en"
     driver.get(script_url)
     driver = read_cookies(driver)
     driver.get(get_config()["script_url"])
-    code_input_element = WebDriverWait(driver, 100).until(EC.presence_of_element_located((By.TAG_NAME, "textarea")))
+    code_input_element = WebDriverWait(driver, 100).until(
+        EC.presence_of_element_located((By.TAG_NAME, "textarea")))
     code_input_element.send_keys(Keys.CONTROL, 'a')
     init_script = code_input_element.get_attribute('value')
     code_input_element.send_keys(Keys.BACKSPACE)
-    cookies_code = '!echo \'{}\' >/tmp/cookies.json'.format(json.dumps(driver.get_cookies()))
+    cookies_code = '!echo \'{}\' >/tmp/cookies.json'.format(
+        json.dumps(driver.get_cookies()))
     code_input_element.send_keys(cookies_code)
     code_run_seletor = "div.main-content > div.codecell-input-output > div.inputarea.horizontal.layout.code > div.cell-gutter > div > div"
-    code_run_element = WebDriverWait(driver, 100).until(EC.element_to_be_clickable((By.CSS_SELECTOR, code_run_seletor)))
+    code_run_element = WebDriverWait(driver, 100).until(
+        EC.element_to_be_clickable((By.CSS_SELECTOR, code_run_seletor)))
     code_run_element.click()
-    code_run_element = WebDriverWait(driver, 100).until(EC.element_to_be_clickable((By.CSS_SELECTOR, code_run_seletor)))
+    code_run_element = WebDriverWait(driver, 100).until(
+        EC.element_to_be_clickable((By.CSS_SELECTOR, code_run_seletor)))
     driver.find_element_by_css_selector(
         'div.main-content > div.codecell-input-output > div.inputarea.horizontal.layout.code > div.editor.flex > div > div.CodeMirror-scroll > div.CodeMirror-sizer > div > div').click()
     code_input_element.send_keys(Keys.CONTROL, 'a')
@@ -105,7 +112,8 @@ def read_cookies(driver):
 def reset_job():
     write_log("开始重置")
     is_running = False
-    globel_driver.find_element_by_xpath('//*[@id="runtime-menu-button"]/div/div/div[1]').click()
+    globel_driver.find_element_by_xpath(
+        '//*[@id="runtime-menu-button"]/div/div/div[1]').click()
     globel_driver.find_element_by_xpath('//*[@id=":21"]').click()
     globel_driver.find_element_by_xpath('//*[@id="ok"]').click()
     time.sleep(5)
@@ -137,10 +145,11 @@ def run_deamon(driver):
                     error_count = 0
                     driver = fresh_page(driver)
                     continue
-                if 'currently executing' not in statues_description and run_element:
+                if 'currently executing' not in statues_description:
                     write_log('点击运行前'+statues_description)
                     code_run_seletor = "div.main-content > div.codecell-input-output > div.inputarea.horizontal.layout.code > div.cell-gutter > div > div > div.cell-execution-indicator"
-                    code_run_element = WebDriverWait(driver, 100).until(EC.element_to_be_clickable((By.CSS_SELECTOR, code_run_seletor)))
+                    code_run_element = WebDriverWait(driver, 100).until(
+                        EC.element_to_be_clickable((By.CSS_SELECTOR, code_run_seletor)))
                     code_run_element.click()
                     time.sleep(5)
                     write_log('点击运行后:'+get_running_status(driver))
@@ -149,7 +158,8 @@ def run_deamon(driver):
                     time.sleep(1)
                     duration += 1
                 if duration % 100 == 0:
-                    write_log("当前duration：{}, {}".format(duration,get_running_status(driver)))
+                    write_log("当前duration：{}, {}".format(
+                        duration, get_running_status(driver)))
                 continue
             except Exception as e:
                 error_count += 1
