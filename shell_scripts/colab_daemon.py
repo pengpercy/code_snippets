@@ -138,7 +138,7 @@ def run_deamon(driver):
                     error_count = 0
                     driver = fresh_page(driver)
                     continue
-                if 'Run cell' in statues_description and 'currently executing' not in statues_description and run_element:
+                if 'currently executing' not in statues_description and run_element:
                     write_log('点击运行前'+statues_description)
                     #run_element.click()
                     code_run_seletor = "div.main-content > div.codecell-input-output > div.inputarea.horizontal.layout.code > div.cell-gutter > div > div > div.cell-execution-indicator"
