@@ -153,14 +153,14 @@ def run_deamon(driver):
                     continue
                 if 'currently executing' not in statues_description:
                     write_log('点击运行前'+statues_description)
-                    # code_run_seletor = "div.main-content > div.codecell-input-output > div.inputarea.horizontal.layout.code > div.cell-gutter > div > div > div.cell-execution-indicator"
-                    # code_run_element = WebDriverWait(driver, 100).until(
-                    #     EC.element_to_be_clickable((By.CSS_SELECTOR, code_run_seletor)))
-                    # code_run_element.click()
-                    code_input_element = WebDriverWait(driver, 100).until(
-                        EC.presence_of_element_located((By.TAG_NAME, "textarea")))
-                    code_input_element.click()
-                    code_input_element.send_keys(Keys.CONTROL,Keys.ENTER)
+                    code_run_seletor = "div.main-content > div.codecell-input-output > div.inputarea.horizontal.layout.code > div.cell-gutter > div > div > div.cell-execution-indicator"
+                    code_run_element = WebDriverWait(driver, 100).until(
+                        EC.element_to_be_clickable((By.CSS_SELECTOR, code_run_seletor)))
+                    code_run_element.click()
+                    # code_input_element = WebDriverWait(driver, 100).until(
+                    #     EC.presence_of_element_located((By.TAG_NAME, "textarea")))
+                    # code_input_element.click()
+                    # code_input_element.send_keys(Keys.CONTROL,Keys.ENTER)
                     time.sleep(5)
                     write_log('点击运行后:'+get_running_status(driver))
                     time.sleep(50)
