@@ -22,7 +22,8 @@ def get_driver():
     options.add_argument('--headless')
     options.add_argument('--no-sandbox')
     options.add_argument('--disable-dev-shm-usage')
-    options.add_argument("--incognito")
+    options.add_argument('--incognito')
+    options.add_argument('--disable-notifications')
     user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.100 Safari/537.36"
     options.add_argument("--user-agent={}".format(user_agent))
     driver = webdriver.Chrome('chromedriver', options=options)
@@ -66,7 +67,7 @@ def login(driver):
     cookies_code = '!echo \'{}\' >/tmp/cookies.json'.format(
         json.dumps(driver.get_cookies()))
     code_input_element.send_keys(cookies_code)
-    code_input_element.send_keys(Keys.CONTROL,Keys.ENTER)
+    code_input_element.send_keys(Keys.CONTROL, Keys.ENTER)
     # code_run_seletor = "div.main-content > div.codecell-input-output > div.inputarea.horizontal.layout.code > div.cell-gutter > div > div"
     # code_run_element = WebDriverWait(driver, 100).until(
     #     EC.element_to_be_clickable((By.CSS_SELECTOR, code_run_seletor)))
@@ -78,20 +79,20 @@ def login(driver):
     code_input_element.send_keys(Keys.CONTROL, 'a')
     code_input_element.send_keys(Keys.BACKSPACE)
     code_input_element.send_keys(init_script)
-    code_input_element.send_keys(Keys.CONTROL,Keys.ENTER)    
+    code_input_element.send_keys(Keys.CONTROL, Keys.ENTER)
     # code_run_element.click()
     write_log('当前状态:'+get_running_status(driver))
 
 
 def fresh_page(driver):
+    write_log("刷新页面:"+get_running_status(driver))
+    driver.refresh()
     try:
-        write_log("刷新页面")
-        driver.refresh()
-        driver.switch_to.alert.accept()
+        if EC.alert_is_present():
+            driver.switch_to.alert.accept()
     except Exception as e:
         write_log("刷新报错:{}".format(e))
         driver.implicitly_wait(20)
-        driver.switch_to.alert.accept()
     return driver
 
 
@@ -157,10 +158,6 @@ def run_deamon(driver):
                     code_run_element = WebDriverWait(driver, 100).until(
                         EC.element_to_be_clickable((By.CSS_SELECTOR, code_run_seletor)))
                     code_run_element.click()
-                    # code_input_element = WebDriverWait(driver, 100).until(
-                    #     EC.presence_of_element_located((By.TAG_NAME, "textarea")))
-                    # code_input_element.click()
-                    # code_input_element.send_keys(Keys.CONTROL,Keys.ENTER)
                     time.sleep(5)
                     write_log('点击运行后:'+get_running_status(driver))
                     time.sleep(50)
