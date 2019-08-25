@@ -68,20 +68,14 @@ def login(driver):
         json.dumps(driver.get_cookies()))
     code_input_element.send_keys(cookies_code)
     code_input_element.send_keys(Keys.CONTROL, Keys.ENTER)
-    # code_run_seletor = "div.main-content > div.codecell-input-output > div.inputarea.horizontal.layout.code > div.cell-gutter > div > div"
-    # code_run_element = WebDriverWait(driver, 100).until(
-    #     EC.element_to_be_clickable((By.CSS_SELECTOR, code_run_seletor)))
-    # code_run_element.click()
-    # code_run_element = WebDriverWait(driver, 100).until(
-    #     EC.element_to_be_clickable((By.CSS_SELECTOR, code_run_seletor)))
     driver.find_element_by_css_selector(
         'div.main-content > div.codecell-input-output > div.inputarea.horizontal.layout.code > div.editor.flex > div > div.CodeMirror-scroll > div.CodeMirror-sizer > div > div').click()
     code_input_element.send_keys(Keys.CONTROL, 'a')
     code_input_element.send_keys(Keys.BACKSPACE)
     code_input_element.send_keys(init_script)
     code_input_element.send_keys(Keys.CONTROL, Keys.ENTER)
-    # code_run_element.click()
     write_log('当前状态:'+get_running_status(driver))
+    run_deamon(driver)
 
 
 def fresh_page(driver):
@@ -143,11 +137,11 @@ def run_deamon(driver):
                 run_seletor = "div.main-content > div.codecell-input-output > div.inputarea.horizontal.layout.code > div.cell-gutter > div > div"
                 run_element = WebDriverWait(driver, 1).until(
                     EC.element_to_be_clickable((By.CSS_SELECTOR, run_seletor)))
+                if len(tree.xpath("/html/body/iron-overlay-backdrop")) > 0:
+                    break
                 if duration > 3600 or (
                         'currently executing' not in statues_description
-                        and not run_element) or len(
-                    tree.xpath("/html/body/iron-overlay-backdrop")
-                ) > 0 or error_count > 10:
+                        and not run_element) or error_count > 10:
                     duration = 0
                     error_count = 0
                     driver = fresh_page(driver)
@@ -178,12 +172,11 @@ def run_deamon(driver):
             break
     if not is_running:
         time.sleep(10)
-    driver.close()
-    write_log('执行结束')
+    write_log("重新登录")
+    login(driver)
 
 
 if __name__ == "__main__":
     scheduler.add_job(reset_job, 'cron', hour=get_config()["crontab"])
     scheduler.start()
     login(globel_driver)
-    run_deamon(globel_driver)
