@@ -67,7 +67,7 @@ def login(driver):
         json.dumps(driver.get_cookies()))
     code_input_element.send_keys(cookies_code)
     code_input_element.send_keys(Keys.CONTROL,Keys.ENTER)
-    code_run_seletor = "div.main-content > div.codecell-input-output > div.inputarea.horizontal.layout.code > div.cell-gutter > div > div"
+    # code_run_seletor = "div.main-content > div.codecell-input-output > div.inputarea.horizontal.layout.code > div.cell-gutter > div > div"
     # code_run_element = WebDriverWait(driver, 100).until(
     #     EC.element_to_be_clickable((By.CSS_SELECTOR, code_run_seletor)))
     # code_run_element.click()
