@@ -154,7 +154,7 @@ def run_deamon(driver):
                     code_run_element.click()
                     time.sleep(5)
                     write_log('点击运行后:'+get_running_status(driver))
-                    time.sleep(50)
+                    time.sleep(30)
                     if 'currently executing' not in get_running_status(driver):
                         fresh_page(driver)
                 elif 'currently executing' in get_running_status(driver):
