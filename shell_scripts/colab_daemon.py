@@ -118,8 +118,7 @@ def reset_job():
     globel_driver.find_element_by_xpath('//*[@id=":21"]').click()
     globel_driver.find_element_by_xpath('//*[@id="ok"]').click()
     time.sleep(5)
-    fresh_page(globel_driver)
-
+    login(globel_driver)
 
 def run_deamon(driver):
     duration = 0
@@ -138,6 +137,7 @@ def run_deamon(driver):
                 run_element = WebDriverWait(driver, 1).until(
                     EC.element_to_be_clickable((By.CSS_SELECTOR, run_seletor)))
                 if len(tree.xpath("/html/body/iron-overlay-backdrop")) > 0:
+                    globel_driver.find_element_by_xpath('//*[@id="ok"]').click()
                     break
                 if duration > 3600 or (
                         'currently executing' not in statues_description
@@ -173,7 +173,7 @@ def run_deamon(driver):
     if not is_running:
         time.sleep(10)
     write_log("重新登录")
-    login(driver)
+    reset_job()
 
 
 if __name__ == "__main__":
