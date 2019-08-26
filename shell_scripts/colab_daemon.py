@@ -147,7 +147,7 @@ def run_deamon(driver):
                 if len(tree.xpath("/html/body/iron-overlay-backdrop")) > 0:
                     driver.find_element_by_xpath('//*[@id="ok"]').click()
                     break
-                if duration > 3600 or 'Interrupt execution' not in statues_description or error_count > 10:
+                if duration > 3600 or error_count > 10:
                     duration = 0
                     error_count = 0
                     driver = fresh_page(driver)
