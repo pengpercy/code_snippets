@@ -47,11 +47,13 @@ def write_log(message):
         f.write(message + "\n")
         f.close()
 
+
 def execute_code(driver):
     code_run_seletor = "div.main-content > div.codecell-input-output > div.inputarea.horizontal.layout.code > div.cell-gutter > div > div > div.cell-execution-indicator"
     code_run_element = WebDriverWait(driver, 100).until(
         EC.element_to_be_clickable((By.CSS_SELECTOR, code_run_seletor)))
     code_run_element.click()
+
 
 def get_running_status(driver):
     """获取最新状态"""
@@ -72,8 +74,9 @@ def login(driver):
     cookies_code = '!echo \'{}\' >/tmp/cookies.json'.format(
         json.dumps(driver.get_cookies()))
     code_input_element.send_keys(cookies_code)
-    execute_code(driver)
-    # code_input_element.send_keys(Keys.CONTROL, Keys.ENTER)
+    if 'currently executing' not in get_running_status(driver):
+        execute_code(driver)
+        # code_input_element.send_keys(Keys.CONTROL, Keys.ENTER)
     driver.find_element_by_css_selector(
         'div.main-content > div.codecell-input-output > div.inputarea.horizontal.layout.code > div.editor.flex > div > div.CodeMirror-scroll > div.CodeMirror-sizer > div > div').click()
     code_input_element.send_keys(Keys.CONTROL, 'a')
@@ -127,6 +130,7 @@ def reset_job():
     time.sleep(5)
     login(globel_driver)
 
+
 def run_deamon(driver):
     duration = 0
     error_count = 0
@@ -144,7 +148,8 @@ def run_deamon(driver):
                 run_element = WebDriverWait(driver, 1).until(
                     EC.element_to_be_clickable((By.CSS_SELECTOR, run_seletor)))
                 if len(tree.xpath("/html/body/iron-overlay-backdrop")) > 0:
-                    globel_driver.find_element_by_xpath('//*[@id="ok"]').click()
+                    globel_driver.find_element_by_xpath(
+                        '//*[@id="ok"]').click()
                     break
                 if duration > 3600 or (
                         'currently executing' not in statues_description
