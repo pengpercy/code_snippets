@@ -90,11 +90,9 @@ def login(driver):
 
 
 def fresh_page(driver):
-    write_log("刷新页面:"+get_running_status(driver))
-    driver.refresh()
     try:
-        if EC.alert_is_present():
-            driver.switch_to.alert.accept()
+        write_log("刷新页面:"+get_running_status(driver))
+        driver.refresh()
     except Exception as e:
         write_log("刷新报错:{}".format(e))
         driver.implicitly_wait(20)
