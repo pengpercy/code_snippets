@@ -71,7 +71,7 @@ def login(driver):
     code_input_element.send_keys(Keys.CONTROL, 'a')
     init_script = code_input_element.get_attribute('value')
     code_input_element.send_keys(Keys.BACKSPACE)
-    cookies_code = '!echo \'{}\' >/tmp/cookies.json'.format(
+    cookies_code = '!echo \'{}\'>/tmp/cookies.json'.format(
         json.dumps(driver.get_cookies()))
     code_input_element.send_keys(cookies_code)
     execute_code(driver)
