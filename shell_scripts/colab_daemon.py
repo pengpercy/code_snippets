@@ -126,7 +126,7 @@ def reset_job():
     is_running = False
     globel_driver.find_element_by_xpath(
         '//*[@id="runtime-menu-button"]/div/div/div[1]').click()
-    globel_driver.find_element_by_xpath('//*[@id=":21"]').click()
+    globel_driver.find_element_by_xpath('//*[@id=":1z"]').click()
     globel_driver.find_element_by_xpath('//*[@id="ok"]').click()
     time.sleep(5)
     login(globel_driver)
@@ -145,16 +145,11 @@ def run_deamon(driver):
                     time.sleep(0.1)
                     continue
                 statues_description = get_running_status(driver)
-                run_seletor = "div.main-content > div.codecell-input-output > div.inputarea.horizontal.layout.code > div.cell-gutter > div > div"
-                run_element = WebDriverWait(driver, 1).until(
-                    EC.element_to_be_clickable((By.CSS_SELECTOR, run_seletor)))
                 if len(tree.xpath("/html/body/iron-overlay-backdrop")) > 0:
-                    globel_driver.find_element_by_xpath(
-                        '//*[@id="ok"]').click()
+                    driver.find_element_by_xpath('//*[@id="ok"]').click()
                     break
                 if duration > 3600 or (
-                        'Interrupt execution' not in statues_description
-                        and not run_element) or error_count > 10:
+                        'Interrupt execution' not in statues_description) or error_count > 10:
                     duration = 0
                     error_count = 0
                     driver = fresh_page(driver)
@@ -183,6 +178,7 @@ def run_deamon(driver):
     if not is_running:
         time.sleep(10)
     write_log("重新登录")
+    globel_driver = driver
     reset_job()
 
 
