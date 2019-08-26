@@ -47,6 +47,11 @@ def write_log(message):
         f.write(message + "\n")
         f.close()
 
+def execute_code(driver):
+    code_run_seletor = "div.main-content > div.codecell-input-output > div.inputarea.horizontal.layout.code > div.cell-gutter > div > div > div.cell-execution-indicator"
+    code_run_element = WebDriverWait(driver, 100).until(
+        EC.element_to_be_clickable((By.CSS_SELECTOR, code_run_seletor)))
+    code_run_element.click()
 
 def get_running_status(driver):
     """获取最新状态"""
@@ -67,13 +72,15 @@ def login(driver):
     cookies_code = '!echo \'{}\' >/tmp/cookies.json'.format(
         json.dumps(driver.get_cookies()))
     code_input_element.send_keys(cookies_code)
-    code_input_element.send_keys(Keys.CONTROL, Keys.ENTER)
+    execute_code(driver)
+    # code_input_element.send_keys(Keys.CONTROL, Keys.ENTER)
     driver.find_element_by_css_selector(
         'div.main-content > div.codecell-input-output > div.inputarea.horizontal.layout.code > div.editor.flex > div > div.CodeMirror-scroll > div.CodeMirror-sizer > div > div').click()
     code_input_element.send_keys(Keys.CONTROL, 'a')
     code_input_element.send_keys(Keys.BACKSPACE)
     code_input_element.send_keys(init_script)
-    code_input_element.send_keys(Keys.CONTROL, Keys.ENTER)
+    execute_code(driver)
+    # code_input_element.send_keys(Keys.CONTROL, Keys.ENTER)
     write_log('当前状态:'+get_running_status(driver))
     run_deamon(driver)
 
@@ -148,10 +155,7 @@ def run_deamon(driver):
                     continue
                 if 'currently executing' not in statues_description:
                     write_log('点击运行前'+statues_description)
-                    code_run_seletor = "div.main-content > div.codecell-input-output > div.inputarea.horizontal.layout.code > div.cell-gutter > div > div > div.cell-execution-indicator"
-                    code_run_element = WebDriverWait(driver, 100).until(
-                        EC.element_to_be_clickable((By.CSS_SELECTOR, code_run_seletor)))
-                    code_run_element.click()
+                    execute_code(driver)
                     time.sleep(5)
                     write_log('点击运行后:'+get_running_status(driver))
                     time.sleep(30)
