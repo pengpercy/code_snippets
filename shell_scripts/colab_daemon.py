@@ -74,16 +74,17 @@ def login(driver):
     cookies_code = '!echo \'{}\' >/tmp/cookies.json'.format(
         json.dumps(driver.get_cookies()))
     code_input_element.send_keys(cookies_code)
-    if 'currently executing' not in get_running_status(driver):
-        execute_code(driver)
-        # code_input_element.send_keys(Keys.CONTROL, Keys.ENTER)
+    execute_code(driver)
+    # code_input_element.send_keys(Keys.CONTROL, Keys.ENTER)
     driver.find_element_by_css_selector(
         'div.main-content > div.codecell-input-output > div.inputarea.horizontal.layout.code > div.editor.flex > div > div.CodeMirror-scroll > div.CodeMirror-sizer > div > div').click()
     code_input_element.send_keys(Keys.CONTROL, 'a')
     code_input_element.send_keys(Keys.BACKSPACE)
     code_input_element.send_keys(init_script)
-    execute_code(driver)
-    # code_input_element.send_keys(Keys.CONTROL, Keys.ENTER)
+    if 'currently executing' not in get_running_status(driver):
+        execute_code(driver)
+        time.sleep(3)
+        # code_input_element.send_keys(Keys.CONTROL, Keys.ENTER)
     write_log('当前状态:'+get_running_status(driver))
     run_deamon(driver)
 
