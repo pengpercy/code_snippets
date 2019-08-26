@@ -81,7 +81,7 @@ def login(driver):
     code_input_element.send_keys(Keys.CONTROL, 'a')
     code_input_element.send_keys(Keys.BACKSPACE)
     code_input_element.send_keys(init_script)
-    if 'currently executing' not in get_running_status(driver):
+    if 'Interrupt execution' not in get_running_status(driver):
         execute_code(driver)
         time.sleep(3)
         # code_input_element.send_keys(Keys.CONTROL, Keys.ENTER)
@@ -153,21 +153,21 @@ def run_deamon(driver):
                         '//*[@id="ok"]').click()
                     break
                 if duration > 3600 or (
-                        'currently executing' not in statues_description
+                        'Interrupt execution' not in statues_description
                         and not run_element) or error_count > 10:
                     duration = 0
                     error_count = 0
                     driver = fresh_page(driver)
                     continue
-                if 'currently executing' not in statues_description:
+                if 'Interrupt execution' not in statues_description:
                     write_log('点击运行前'+statues_description)
                     execute_code(driver)
                     time.sleep(5)
                     write_log('点击运行后:'+get_running_status(driver))
                     time.sleep(30)
-                    if 'currently executing' not in get_running_status(driver):
+                    if 'Interrupt execution' not in get_running_status(driver):
                         fresh_page(driver)
-                elif 'currently executing' in get_running_status(driver):
+                elif 'Interrupt execution' in get_running_status(driver):
                     time.sleep(1)
                     duration += 1
                 if duration % 100 == 0:
