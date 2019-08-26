@@ -93,6 +93,7 @@ def fresh_page(driver):
     try:
         write_log("刷新页面:"+get_running_status(driver))
         driver.refresh()
+        execute_code(driver)
     except Exception as e:
         write_log("刷新报错:{}".format(e))
         driver.implicitly_wait(20)
