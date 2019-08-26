@@ -94,10 +94,8 @@ def fresh_page(driver):
         write_log("刷新页面:"+get_running_status(driver))
         driver.refresh()
         driver.switch_to_alert().accept()
-        execute_code(driver)
     except Exception as e:
         write_log("刷新报错:{}".format(e))
-        execute_code(driver)
         driver.implicitly_wait(20)
     return driver
 
@@ -154,6 +152,7 @@ def run_deamon(driver):
                     duration = 0
                     error_count = 0
                     driver = fresh_page(driver)
+                    execute_code(driver)
                     continue
                 if 'Interrupt execution' not in statues_description:
                     write_log('点击运行前'+statues_description)
