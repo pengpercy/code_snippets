@@ -66,21 +66,21 @@ def login(driver):
     driver.get(script_url)
     driver = read_cookies(driver)
     driver.get(get_config()["script_url"])
-    code_input_element = WebDriverWait(driver, 100).until(
-        EC.presence_of_element_located((By.TAG_NAME, "textarea")))
-    code_input_element.send_keys(Keys.CONTROL, 'a')
-    init_script = code_input_element.get_attribute('value')
-    code_input_element.send_keys(Keys.BACKSPACE)
-    cookies_code = '!echo \'{}\'>/tmp/cookies.json'.format(
-        json.dumps(driver.get_cookies()))
-    code_input_element.send_keys(cookies_code)
+    # code_input_element = WebDriverWait(driver, 100).until(
+    #     EC.presence_of_element_located((By.TAG_NAME, "textarea")))
+    # code_input_element.send_keys(Keys.CONTROL, 'a')
+    # init_script = code_input_element.get_attribute('value')
+    # code_input_element.send_keys(Keys.BACKSPACE)
+    # cookies_code = '!echo \'{}\'>/tmp/cookies.json'.format(
+    #     json.dumps(driver.get_cookies()))
+    # code_input_element.send_keys(cookies_code)
     execute_code(driver)
-    # code_input_element.send_keys(Keys.CONTROL, Keys.ENTER)
-    driver.find_element_by_css_selector(
-        'div.main-content > div.codecell-input-output > div.inputarea.horizontal.layout.code > div.editor.flex > div > div.CodeMirror-scroll > div.CodeMirror-sizer > div > div').click()
-    code_input_element.send_keys(Keys.CONTROL, 'a')
-    code_input_element.send_keys(Keys.BACKSPACE)
-    code_input_element.send_keys(init_script)
+    # # code_input_element.send_keys(Keys.CONTROL, Keys.ENTER)
+    # driver.find_element_by_css_selector(
+    #     'div.main-content > div.codecell-input-output > div.inputarea.horizontal.layout.code > div.editor.flex > div > div.CodeMirror-scroll > div.CodeMirror-sizer > div > div').click()
+    # code_input_element.send_keys(Keys.CONTROL, 'a')
+    # code_input_element.send_keys(Keys.BACKSPACE)
+    # code_input_element.send_keys(init_script)
     if 'Interrupt execution' not in get_running_status(driver):
         execute_code(driver)
         time.sleep(3)
