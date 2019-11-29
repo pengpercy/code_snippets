@@ -135,9 +135,13 @@ cat >/etc/shadowsocks-libev/config.json <<-EOF
     "method":"${shadowsockscipher}",
     "fast_open":false,
     "nameserver":"8.8.8.8",
-    "mode":"tcp_and_udp"
+    "mode":"tcp_and_udp",
+    "plugin":"v2ray-plugin",
+    "plugin_opts":"server"
 }
 EOF
+wget -qO v2ray-plugin.tar.gz https://github.com/shadowsocks/v2ray-plugin/releases/download/v1.2.0/v2ray-plugin-linux-amd64-v1.2.0.tar.gz
+tar -xzf v2ray-plugin.tar.gz && mv v2ray-plugin_linux_amd64 /usr/bin/v2ray-plugin && rm v2ray-plugin.tar.gz
 wget -qO /etc/init.d/shadowsocks-libev https://raw.githubusercontent.com/pengpercy/code_snippets/master/shell_scripts/shadowsocks.sh
 chmod +x /etc/init.d/shadowsocks-libev
 service shadowsocks-libev start
