@@ -100,8 +100,10 @@ cat >/etc/shadowsocks-libev/config.json <<-EOF
     "plugin_opts":"server"
 }
 EOF
-wget -qO v2ray-plugin.tar.gz https://github.com/shadowsocks/v2ray-plugin/releases/download/v1.2.0/v2ray-plugin-linux-amd64-v1.2.0.tar.gz
-tar -xzf v2ray-plugin.tar.gz && mv v2ray-plugin_linux_amd64 /usr/bin/v2ray-plugin && rm v2ray-plugin.tar.gz
+if [ ! -f /usr/bin/v2ray-plugin ]; then
+  wget -qO v2ray-plugin.tar.gz https://github.com/shadowsocks/v2ray-plugin/releases/download/v1.2.0/v2ray-plugin-linux-amd64-v1.2.0.tar.gz
+  tar -xzf v2ray-plugin.tar.gz && mv v2ray-plugin_linux_amd64 /usr/bin/v2ray-plugin && rm v2ray-plugin.tar.gz
+fi
 
 echo "配置supervisor"
 cat >/etc/supervisor/conf.d/frpc.conf <<-EOF
@@ -156,9 +158,5 @@ sed -re 's/^(\#)(ListenAddress)([[:space:]]+)(0\.0\.0\.0)(.*)/\2\3\4/' /etc/ssh/
 sed -re 's/^(\#)(PermitRootLogin)([[:space:]]+)(prohibit-password)(.*)/\2\3\4/' /etc/ssh/sshd_config >~/temp.cnf && mv -f ~/temp.cnf /etc/ssh/sshd_config
 sed -re 's/^(PermitRootLogin)([[:space:]]+)prohibit-password/\1\2yes/' /etc/ssh/sshd_config >~/temp.cnf && mv -f ~/temp.cnf /etc/ssh/sshd_config && (echo "${ssh_password}" && echo "${ssh_password}") | sudo passwd root
 service ssh restart
-
-# wget -qO /etc/init.d/shadowsocks-libev https://raw.githubusercontent.com/pengpercy/code_snippets/master/shell_scripts/shadowsocks.sh
-# chmod +x /etc/init.d/shadowsocks-libev
-# service shadowsocks-libev start
 
 touch /var/log/frp.log
