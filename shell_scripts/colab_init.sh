@@ -84,6 +84,25 @@ if [ ! -d /opt/colab_daemon ]; then
   wget -qO /opt/colab_daemon/app.py https://raw.githubusercontent.com/pengpercy/code_snippets/master/shell_scripts/colab_daemon.py
 fi
 
+echo "安装shadowsocks"
+cat >/etc/shadowsocks-libev/config.json <<-EOF
+{
+    "server":"0.0.0.0",
+    "server_port":${shadowsocksport},
+    "password":"${shadowsockspwd}",
+    "timeout":300,
+    "user":"nobody",
+    "method":"${shadowsockscipher}",
+    "fast_open":false,
+    "nameserver":"8.8.8.8",
+    "mode":"tcp_and_udp",
+    "plugin":"v2ray-plugin",
+    "plugin_opts":"server"
+}
+EOF
+wget -qO v2ray-plugin.tar.gz https://github.com/shadowsocks/v2ray-plugin/releases/download/v1.2.0/v2ray-plugin-linux-amd64-v1.2.0.tar.gz
+tar -xzf v2ray-plugin.tar.gz && mv v2ray-plugin_linux_amd64 /usr/bin/v2ray-plugin && rm v2ray-plugin.tar.gz
+
 echo "配置supervisor"
 cat >/etc/supervisor/conf.d/frpc.conf <<-EOF
 [program:frpc]
@@ -113,6 +132,20 @@ stopsignal = KILL
 stopwaitsecs = 10
 EOF
 
+cat >/etc/supervisor/conf.d/shadowsocks-libev.conf <<-EOF
+[program:ss-server]
+command = ss-server -c /etc/shadowsocks-libev/config.json
+directory = /etc/shadowsocks-libev/
+autostart = true
+autorestart = true
+stdout_logfile = /var/log/shadowsocks.log
+stderr_logfile = /var/log/shadowsocks.err.log
+numprocs = 1
+startretries = 100
+stopsignal = KILL
+stopwaitsecs = 10
+EOF
+
 if [ ! -f /var/log/frp.log ]; then
   sudo service supervisor start
 fi
@@ -124,25 +157,8 @@ sed -re 's/^(\#)(PermitRootLogin)([[:space:]]+)(prohibit-password)(.*)/\2\3\4/' 
 sed -re 's/^(PermitRootLogin)([[:space:]]+)prohibit-password/\1\2yes/' /etc/ssh/sshd_config >~/temp.cnf && mv -f ~/temp.cnf /etc/ssh/sshd_config && (echo "${ssh_password}" && echo "${ssh_password}") | sudo passwd root
 service ssh restart
 
-echo "安装shadowsocks"
-cat >/etc/shadowsocks-libev/config.json <<-EOF
-{
-    "server":"0.0.0.0",
-    "server_port":${shadowsocksport},
-    "password":"${shadowsockspwd}",
-    "timeout":300,
-    "user":"nobody",
-    "method":"${shadowsockscipher}",
-    "fast_open":false,
-    "nameserver":"8.8.8.8",
-    "mode":"tcp_and_udp",
-    "plugin":"v2ray-plugin",
-    "plugin_opts":"server"
-}
-EOF
-wget -qO v2ray-plugin.tar.gz https://github.com/shadowsocks/v2ray-plugin/releases/download/v1.2.0/v2ray-plugin-linux-amd64-v1.2.0.tar.gz
-tar -xzf v2ray-plugin.tar.gz && mv v2ray-plugin_linux_amd64 /usr/bin/v2ray-plugin && rm v2ray-plugin.tar.gz
-wget -qO /etc/init.d/shadowsocks-libev https://raw.githubusercontent.com/pengpercy/code_snippets/master/shell_scripts/shadowsocks.sh
-chmod +x /etc/init.d/shadowsocks-libev
-service shadowsocks-libev start
+# wget -qO /etc/init.d/shadowsocks-libev https://raw.githubusercontent.com/pengpercy/code_snippets/master/shell_scripts/shadowsocks.sh
+# chmod +x /etc/init.d/shadowsocks-libev
+# service shadowsocks-libev start
+
 touch /var/log/frp.log
