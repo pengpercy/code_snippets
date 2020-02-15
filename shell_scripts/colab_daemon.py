@@ -153,6 +153,5 @@ def run_deamon(driver):
     write_log("重新登录")
     globel_driver = driver
 
-
 if __name__ == "__main__":
     login(globel_driver)
