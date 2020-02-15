@@ -1,6 +1,5 @@
 import time
 from datetime import datetime, timezone, timedelta
-from apscheduler.schedulers.background import BackgroundScheduler
 from lxml import etree
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -31,7 +30,6 @@ def get_driver():
 
 
 is_running = True
-scheduler = BackgroundScheduler()
 globel_driver = get_driver()
 
 
@@ -107,18 +105,6 @@ def read_cookies(driver):
     return driver
 
 
-# @scheduler.scheduled_job("cron", CronTrigger.from_crontab(get_config()["crontab"]))
-def reset_job():
-    write_log("开始重置")
-    is_running = False
-    globel_driver.find_element_by_xpath(
-        '//*[@id="runtime-menu-button"]/div/div/div[1]').click()
-    globel_driver.find_element_by_xpath('//*[@id=":1z"]').click()
-    globel_driver.find_element_by_xpath('//*[@id="ok"]').click()
-    time.sleep(5)
-    login(globel_driver)
-
-
 def run_deamon(driver):
     duration = 0
     error_count = 0
@@ -166,10 +152,7 @@ def run_deamon(driver):
         time.sleep(10)
     write_log("重新登录")
     globel_driver = driver
-    reset_job()
 
 
 if __name__ == "__main__":
-    scheduler.add_job(reset_job, 'cron', hour=get_config()["crontab"])
-    scheduler.start()
     login(globel_driver)
