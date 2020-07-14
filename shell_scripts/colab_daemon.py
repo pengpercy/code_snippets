@@ -23,7 +23,7 @@ def get_driver():
     options.add_argument('--disable-dev-shm-usage')
     options.add_argument('--incognito')
     options.add_argument('--disable-notifications')
-    user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.100 Safari/537.36"
+    user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36"
     options.add_argument("--user-agent={}".format(user_agent))
     driver = webdriver.Chrome('chromedriver', options=options)
     return driver
@@ -47,16 +47,17 @@ def write_log(message):
 
 
 def execute_code(driver):
-    code_run_seletor = "div.main-content > div.codecell-input-output > div.inputarea.horizontal.layout.code > div.cell-gutter > div > div > div.cell-execution-indicator"
+    code_run_element = driver.execute_script(
+        '''return document.querySelector("div.main-content > div.codecell-input-output > div.inputarea.horizontal.layout.code > div.cell-gutter > div > colab-run-button").shadowRoot.querySelector("div > div.cell-execution-indicator");''')
     code_run_element = WebDriverWait(driver, 100).until(
-        EC.element_to_be_clickable((By.CSS_SELECTOR, code_run_seletor)))
+        EC.element_to_be_clickable(code_run_element))
     code_run_element.click()
 
 
 def get_running_status(driver):
     """获取最新状态"""
     tree = etree.HTML(driver.page_source)
-    return tree.xpath('//div[2]/paper-icon-button/@title')[0]
+    return tree.xpath('//colab-run-button/@title')[0]
 
 
 def login(driver):
@@ -152,6 +153,7 @@ def run_deamon(driver):
         time.sleep(10)
     write_log("重新登录")
     globel_driver = driver
+
 
 if __name__ == "__main__":
     login(globel_driver)
