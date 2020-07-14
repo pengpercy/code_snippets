@@ -47,10 +47,18 @@ def write_log(message):
 
 
 def execute_code(driver):
+    """等待加载完成"""
+    for i in range(1000):
+        tree = etree.HTML(driver.page_source)
+        if len(tree.xpath('//div[2]/paper-icon-button')) > 0:
+            print("加载完成")
+            break
+        else:
+            time.sleep(0.1)
+            continue
+
     code_run_element = driver.execute_script(
         '''return document.querySelector("div.main-content > div.codecell-input-output > div.inputarea.horizontal.layout.code > div.cell-gutter > div > colab-run-button").shadowRoot.querySelector("div > div.cell-execution-indicator");''')
-    code_run_element = WebDriverWait(driver, 100).until(
-        EC.element_to_be_clickable(code_run_element))
     code_run_element.click()
 
 
@@ -115,7 +123,7 @@ def run_deamon(driver):
             try:
                 save_cookie(driver)
                 tree = etree.HTML(driver.page_source)
-                if len(tree.xpath('//div[2]/paper-icon-button/@title')) == 0:
+                if len(tree.xpath('//colab-run-button/@title')) == 0:
                     time.sleep(0.1)
                     continue
                 statues_description = get_running_status(driver)
