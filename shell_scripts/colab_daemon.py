@@ -60,6 +60,7 @@ def execute_code(driver):
     code_run_element = driver.execute_script(
         '''return document.querySelector("div.main-content > div.codecell-input-output > div.inputarea.horizontal.layout.code > div.cell-gutter > div > colab-run-button").shadowRoot.querySelector("div > div.cell-execution-indicator");''')
     code_run_element.click()
+    time.sleep(3)
 
 
 def get_running_status(driver):
