@@ -3,4 +3,4 @@ shell_scripts/test*.sh
 shell_scripts/tmp.*
 .vscode/*
 shell_scripts/log/*
-*/log/*.log
+log/*.log
