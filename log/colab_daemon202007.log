@@ -149,3 +149,21 @@ Message: unexpected alert open: {Alert text : }
 07-14 23:56:29 error 守护进程:Message: no such window: window was already closed
   (Session info: chrome=83.0.4103.116)
 
+07-15 20:24:58 当前状态:Run cell (Ctrl+Enter)
+cell has not been executed in this session
+
+queued at 8:24 PM (0 minutes ago)
+07-15 20:24:58 开始进程守护
+07-15 20:24:58 点击运行前Run cell (Ctrl+Enter)
+cell has not been executed in this session
+
+queued at 8:24 PM (0 minutes ago)
+07-15 20:25:06 点击运行后:Run cell (Ctrl+Enter)
+cell executed since last change
+
+queued at 8:24 PM (0 minutes ago)
+07-15 20:27:33 刷新页面:Run cell (Ctrl+Enter)
+cell has not been executed in this session
+07-15 20:28:38 刷新报错:Message: no such alert
+  (Session info: chrome=84.0.4147.89)
+
