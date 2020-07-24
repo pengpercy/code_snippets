@@ -83,6 +83,7 @@ def login(driver):
     driver.get(script_url)
     driver = read_cookies(driver)
     driver.get(get_config()["script_url"])
+    write_log("开始登录");
     execute_code(driver)
     if 'Interrupt execution' not in get_running_status(driver):
         execute_code(driver)
