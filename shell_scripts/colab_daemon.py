@@ -43,8 +43,8 @@ def write_log(message):
         print(message)
         f.write(message + "\n")
         message = "当前url: {}".format(driver.current_url) + "\n"
-        f.write(message)
         print(message)
+        f.write(message)
         f.close()
 
 
