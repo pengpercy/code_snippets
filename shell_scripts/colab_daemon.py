@@ -69,6 +69,9 @@ def execute_code(driver):
 def get_running_status(driver):
     """获取最新状态"""
     tree = etree.HTML(driver.page_source)
+    if len(tree.xpath('//colab-run-button')) == 0:
+        fresh_page(driver)
+        time.sleep(10)
     return tree.xpath('//colab-run-button/@title')[0]
 
 
@@ -88,7 +91,7 @@ def login(driver):
 
 def fresh_page(driver):
     try:
-        write_log("刷新页面:" + get_running_status(driver))
+        write_log("当前url: {}".format(e))
         driver.refresh()
         driver.switch_to_alert().accept()
     except Exception as e:
