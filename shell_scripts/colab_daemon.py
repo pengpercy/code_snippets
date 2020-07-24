@@ -42,6 +42,7 @@ def write_log(message):
         message = '{} {}'.format(timenow.strftime("%m-%d %H:%M:%S"), message)
         print(message)
         f.write(message + "\n")
+        f.write("当前url: {}".format(driver.current_url) + "\n")
         f.close()
 
 
@@ -91,7 +92,6 @@ def login(driver):
 
 def fresh_page(driver):
     try:
-        write_log("当前url: {}".format(e))
         driver.refresh()
         driver.switch_to_alert().accept()
     except Exception as e:
