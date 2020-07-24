@@ -42,7 +42,7 @@ def write_log(message):
         message = '{} {}'.format(timenow.strftime("%m-%d %H:%M:%S"), message)
         print(message)
         f.write(message + "\n")
-        message = "当前url: {}".format(driver.current_url) + "\n"
+        message = "当前url: {}".format(globel_driver.current_url) + "\n"
         print(message)
         f.write(message)
         f.close()
