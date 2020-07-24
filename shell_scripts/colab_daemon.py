@@ -37,8 +37,7 @@ def write_log(message):
     """记录日志"""
     timenow = datetime.utcnow().replace(tzinfo=timezone.utc).astimezone(
         timezone(timedelta(hours=8)))
-    file_name = './log/colab_daemon{}.log'.format(
-        timenow.strftime("%Y%m"))
+    file_name = './log/colab_daemon{}.log'.format(timenow.strftime("%Y%m"))
     with open(file_name, 'a+', encoding='utf-8') as f:
         message = '{} {}'.format(timenow.strftime("%m-%d %H:%M:%S"), message)
         print(message)
@@ -48,18 +47,22 @@ def write_log(message):
 
 def execute_code(driver):
     """等待加载完成"""
-    for i in range(1000):
-        tree = etree.HTML(driver.page_source)
-        if len(tree.xpath('//div[2]/paper-icon-button')) > 0:
-            print("加载完成")
-            break
-        else:
-            time.sleep(0.1)
-            continue
-
-    code_run_element = driver.execute_script(
-        '''return document.querySelector("div.main-content > div.codecell-input-output > div.inputarea.horizontal.layout.code > div.cell-gutter > div > colab-run-button").shadowRoot.querySelector("div > div.cell-execution-indicator");''')
-    code_run_element.click()
+    try:
+        for i in range(1000):
+            tree = etree.HTML(driver.page_source)
+            if len(tree.xpath('//colab-run-button')) == 1:
+                print("加载完成")
+                break
+            else:
+                time.sleep(0.1)
+                continue
+        code_run_element = driver.execute_script(
+            '''return document.querySelector("div.main-content > div.codecell-input-output > div.inputarea.horizontal.layout.code > div.cell-gutter > div > colab-run-button").shadowRoot.querySelector("div > div.cell-execution-indicator");'''
+        )
+        code_run_element.click()
+    except Exception as e:
+        write_log("点击执行报错:{}".format(e))
+        driver.implicitly_wait(20)
     time.sleep(3)
 
 
@@ -79,13 +82,13 @@ def login(driver):
         execute_code(driver)
         time.sleep(3)
         # code_input_element.send_keys(Keys.CONTROL, Keys.ENTER)
-    write_log('当前状态:'+get_running_status(driver))
+    write_log('当前状态:' + get_running_status(driver))
     run_deamon(driver)
 
 
 def fresh_page(driver):
     try:
-        write_log("刷新页面:"+get_running_status(driver))
+        write_log("刷新页面:" + get_running_status(driver))
         driver.refresh()
         driver.switch_to_alert().accept()
     except Exception as e:
@@ -138,10 +141,10 @@ def run_deamon(driver):
                     execute_code(driver)
                     continue
                 if 'Interrupt execution' not in statues_description:
-                    write_log('点击运行前'+statues_description)
+                    write_log('点击运行前' + statues_description)
                     execute_code(driver)
-                    time.sleep(5)
-                    write_log('点击运行后:'+get_running_status(driver))
+                    time.sleep(30)
+                    write_log('点击运行后:' + get_running_status(driver))
                     time.sleep(30)
                     if 'Interrupt execution' not in get_running_status(driver):
                         fresh_page(driver)
