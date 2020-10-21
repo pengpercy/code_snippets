@@ -84,8 +84,8 @@ if [ ! -d /opt/colab_daemon ]; then
   wget -qO /opt/colab_daemon/app.py https://raw.githubusercontent.com/pengpercy/code_snippets/master/shell_scripts/colab_daemon.py
 fi
 
-echo "安装senll"
-cat >/etc/senll/config.conf <<-EOF
+echo "安装snell"
+cat >/etc/snell/config.conf <<-EOF
 [snell-server]
 listen = 0.0.0.0:${shadowsocksport}
 psk = ${shadowsockspwd}
@@ -125,14 +125,14 @@ stopsignal = KILL
 stopwaitsecs = 10
 EOF
 
-cat >/etc/supervisor/conf.d/senll.conf <<-EOF
-[program:senll-server]
-command = senll-server -c /etc/senll/config.json
-directory = /etc/senll/
+cat >/etc/supervisor/conf.d/snell.conf <<-EOF
+[program:snell-server]
+command = snell-server -c /etc/snell/config.json
+directory = /etc/snell/
 autostart = true
 autorestart = true
-stdout_logfile = /var/log/senll.log
-stderr_logfile = /var/log/senll.err.log
+stdout_logfile = /var/log/snell.log
+stderr_logfile = /var/log/snell.err.log
 numprocs = 1
 startretries = 100
 stopsignal = KILL
