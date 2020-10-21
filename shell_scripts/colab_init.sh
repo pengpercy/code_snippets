@@ -14,7 +14,7 @@ EOF
 fi
 
 echo "安装依赖..."
-sudo apt update -qq && sudo apt install -qq -y shadowsocks-libev rng-tools supervisor vim htop chromium-chromedriver git jq bash-completion ssh >/dev/null
+sudo apt update -qq && sudo apt install -qq -y shadowsocks-libev rng-tools supervisor vim htop chromium-chromedriver git jq bash-completion ssh unzip >/dev/null
 source ~/.bashrc
 
 echo "设置配置信息"
@@ -84,25 +84,16 @@ if [ ! -d /opt/colab_daemon ]; then
   wget -qO /opt/colab_daemon/app.py https://raw.githubusercontent.com/pengpercy/code_snippets/master/shell_scripts/colab_daemon.py
 fi
 
-echo "安装shadowsocks"
-cat >/etc/shadowsocks-libev/config.json <<-EOF
-{
-    "server":"0.0.0.0",
-    "server_port":${shadowsocksport},
-    "password":"${shadowsockspwd}",
-    "timeout":300,
-    "user":"nobody",
-    "method":"${shadowsockscipher}",
-    "fast_open":false,
-    "nameserver":"8.8.8.8",
-    "mode":"tcp_and_udp",
-    "plugin":"v2ray-plugin",
-    "plugin_opts":"server"
-}
+echo "安装senll"
+cat >/etc/senll/config.conf <<-EOF
+[snell-server]
+listen = 0.0.0.0:${shadowsocksport}
+psk = ${shadowsockspwd}
+obfs = tls
 EOF
-if [ ! -f /usr/bin/v2ray-plugin ]; then
-  wget -qO v2ray-plugin.tar.gz https://github.com/shadowsocks/v2ray-plugin/releases/download/v1.2.0/v2ray-plugin-linux-amd64-v1.2.0.tar.gz
-  tar -xzf v2ray-plugin.tar.gz && mv v2ray-plugin_linux_amd64 /usr/bin/v2ray-plugin && rm v2ray-plugin.tar.gz
+if [ ! -f /usr/bin/snell-server ]; then
+  wget -qO snell-server.zip https://github.com/surge-networks/snell/releases/download/v2.0.3/snell-server-v2.0.3-linux-amd64.zip
+  unzip snell-server.zip && mv snell-server /usr/bin/snell-server && rm snell-server.zip
 fi
 
 echo "配置supervisor"
@@ -134,14 +125,14 @@ stopsignal = KILL
 stopwaitsecs = 10
 EOF
 
-cat >/etc/supervisor/conf.d/shadowsocks-libev.conf <<-EOF
-[program:ss-server]
-command = ss-server -c /etc/shadowsocks-libev/config.json
-directory = /etc/shadowsocks-libev/
+cat >/etc/supervisor/conf.d/senll.conf <<-EOF
+[program:senll-server]
+command = senll-server -c /etc/senll/config.json
+directory = /etc/senll/
 autostart = true
 autorestart = true
-stdout_logfile = /var/log/shadowsocks.log
-stderr_logfile = /var/log/shadowsocks.err.log
+stdout_logfile = /var/log/senll.log
+stderr_logfile = /var/log/senll.err.log
 numprocs = 1
 startretries = 100
 stopsignal = KILL
