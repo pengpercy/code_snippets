@@ -85,6 +85,9 @@ if [ ! -d /opt/colab_daemon ]; then
 fi
 
 echo "安装snell"
+if [ ! -d /etc/snell/ ]; then
+  mkdir -p /etc/snell
+fi
 cat >/etc/snell/config.conf <<-EOF
 [snell-server]
 listen = 0.0.0.0:${shadowsocksport}
