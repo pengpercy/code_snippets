@@ -1,3 +1,4 @@
+
 #!/usr/bin/env bash
 ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
 
@@ -14,7 +15,7 @@ EOF
 fi
 
 echo "安装依赖..."
-sudo apt update -qq && sudo apt install -qq -y shadowsocks-libev rng-tools supervisor vim htop chromium-chromedriver git jq bash-completion ssh unzip >/dev/null
+sudo apt update -qq && sudo apt install -qq -y shadowsocks-libev rng-tools supervisor vim htop chromium-chromedriver git jq bash-completion ssh >/dev/null
 source ~/.bashrc
 
 echo "设置配置信息"
@@ -45,14 +46,12 @@ cat >/etc/frp/frpc.ini <<-EOF
 server_addr = ${frp_server_addr}
 server_port = ${frp_server_port}
 token = ${frp_token}
-
 [colab.${instance_name}.ssh]
 type = tcp
 local_ip = localhost
 local_port = 22
 remote_port = ${ssh_port}
 custom_domains = ${frp_server_domain}
-
 [colab.${instance_name}.ss]
 type = tcp
 local_ip = localhost
@@ -61,7 +60,6 @@ remote_port = ${shadowsocksport}
 use_encryption = true
 use_compression = true
 custom_domains = ${frp_server_domain}
-
 [colab.${instance_name}.ss.udp]
 type = udp
 local_ip = localhost
@@ -84,19 +82,25 @@ if [ ! -d /opt/colab_daemon ]; then
   wget -qO /opt/colab_daemon/app.py https://raw.githubusercontent.com/pengpercy/code_snippets/master/shell_scripts/colab_daemon.py
 fi
 
-echo "安装snell"
-if [ ! -d /etc/snell ]; then
-  mkdir -p /etc/snell
-fi
-cat >/etc/snell/config.conf <<-EOF
-[snell-server]
-listen = 0.0.0.0:${shadowsocksport}
-psk = ${shadowsockspwd}
-obfs = tls
+echo "安装shadowsocks"
+cat >/etc/shadowsocks-libev/config.json <<-EOF
+{
+    "server":"0.0.0.0",
+    "server_port":${shadowsocksport},
+    "password":"${shadowsockspwd}",
+    "timeout":300,
+    "user":"nobody",
+    "method":"${shadowsockscipher}",
+    "fast_open":false,
+    "nameserver":"8.8.8.8",
+    "mode":"tcp_and_udp",
+    "plugin":"v2ray-plugin",
+    "plugin_opts":"server"
+}
 EOF
-if [ ! -f /usr/bin/snell-server ]; then
-  wget -qO snell-server.zip https://github.com/surge-networks/snell/releases/download/v2.0.3/snell-server-v2.0.3-linux-amd64.zip
-  unzip snell-server.zip && mv snell-server /usr/bin/snell-server && rm snell-server.zip
+if [ ! -f /usr/bin/v2ray-plugin ]; then
+  wget -qO v2ray-plugin.tar.gz https://github.com/shadowsocks/v2ray-plugin/releases/download/v1.2.0/v2ray-plugin-linux-amd64-v1.2.0.tar.gz
+  tar -xzf v2ray-plugin.tar.gz && mv v2ray-plugin_linux_amd64 /usr/bin/v2ray-plugin && rm v2ray-plugin.tar.gz
 fi
 
 echo "配置supervisor"
@@ -128,14 +132,14 @@ stopsignal = KILL
 stopwaitsecs = 10
 EOF
 
-cat >/etc/supervisor/conf.d/snell.conf <<-EOF
-[program:snell-server]
-command = snell-server -c /etc/snell/config.json
-directory = /etc/snell/
+cat >/etc/supervisor/conf.d/shadowsocks-libev.conf <<-EOF
+[program:ss-server]
+command = ss-server -c /etc/shadowsocks-libev/config.json
+directory = /etc/shadowsocks-libev/
 autostart = true
 autorestart = true
-stdout_logfile = /var/log/snell.log
-stderr_logfile = /var/log/snell.err.log
+stdout_logfile = /var/log/shadowsocks.log
+stderr_logfile = /var/log/shadowsocks.err.log
 numprocs = 1
 startretries = 100
 stopsignal = KILL
