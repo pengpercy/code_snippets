@@ -85,7 +85,7 @@ if [ ! -d /opt/colab_daemon ]; then
 fi
 
 echo "安装snell"
-if [ ! -d /etc/snell/ ]; then
+if [ ! -d /etc/snell ]; then
   mkdir -p /etc/snell
 fi
 cat >/etc/snell/config.conf <<-EOF
