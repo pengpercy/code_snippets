@@ -28,6 +28,9 @@ case "$1" in
   status)
     vmrun list
     ;;
+  getip)
+    vmrun getGuestIPAddress "$vmFile"
+    ;;
   *)
     echo "Usage: possible options are: start | stop | suspend | pause | unpause | reset | status"
     exit 1
