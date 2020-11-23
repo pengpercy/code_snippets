@@ -93,15 +93,22 @@ cat >/etc/shadowsocks-libev/config.json <<-EOF
     "method":"${shadowsockscipher}",
     "fast_open":false,
     "nameserver":"8.8.8.8",
-    "mode":"tcp_and_udp",
-    "plugin":"v2ray-plugin",
-    "plugin_opts":"server"
+    "mode":"tcp_and_udp"
 }
 EOF
-if [ ! -f /usr/bin/v2ray-plugin ]; then
-  wget -qO v2ray-plugin.tar.gz https://github.com/shadowsocks/v2ray-plugin/releases/download/v1.2.0/v2ray-plugin-linux-amd64-v1.2.0.tar.gz
-  tar -xzf v2ray-plugin.tar.gz && mv v2ray-plugin_linux_amd64 /usr/bin/v2ray-plugin && rm v2ray-plugin.tar.gz
-fi
+
+# if [ ! -f /usr/bin/v2ray-plugin ]; then
+#   wget -qO v2ray-plugin.tar.gz https://github.com/shadowsocks/v2ray-plugin/releases/download/v1.2.0/v2ray-plugin-linux-amd64-v1.2.0.tar.gz
+#   tar -xzf v2ray-plugin.tar.gz && mv v2ray-plugin_linux_amd64 /usr/bin/v2ray-plugin && rm v2ray-plugin.tar.gz
+# fi
+
+# if [ ! -f /usr/bin/youtube-dl ]; then
+#   wget -qO youtube-dl.tar.gz https://github.com/ytdl-org/youtube-dl/releases/download/2020.11.17/youtube-dl-2020.11.17.tar.gz && tar -xzf youtube-dl.tar.gz && cd youtube-dl/ && mv -f ./youtube-dl /usr/bin/youtube-dl && cd .. && rm -rf youtube*
+# fi
+
+# if [ ! -f /usr/bin/trojan ]; then
+#   wget -qO trojan.tar.xz https://github.com/trojan-gfw/trojan/releases/download/v1.16.0/trojan-1.16.0-linux-amd64.tar.xz && xz -d trojan.tar.xz && tar xf trojan.tar && cd trojan/ && mv -f ./trojan /usr/bin/ && cd .. && rm -rf trojan*
+# fi
 
 echo "配置supervisor"
 cat >/etc/supervisor/conf.d/frpc.conf <<-EOF
