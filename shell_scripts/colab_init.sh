@@ -164,7 +164,7 @@ if [ ! -f /var/log/frp.log ]; then
   sed -re 's/^(PermitRootLogin)([[:space:]]+)prohibit-password/\1\2yes/' /etc/ssh/sshd_config >~/temp.cnf && mv -f ~/temp.cnf /etc/ssh/sshd_config
   sed -re 's/^(\#)(PubkeyAuthentication)([[:space:]]+)(yes)(.*)/\2\3\4/' /etc/ssh/sshd_config >~/temp.cnf && mv -f ~/temp.cnf /etc/ssh/sshd_config
   sed -re 's/^(\#)(AuthorizedKeysFile)([[:space:]]+)(\.ssh\/authorized_keys)([[:space:]]+)(\.ssh\/authorized_keys2)(.*)/\2\3\4\5\6/' /etc/ssh/sshd_config >~/temp.cnf && mv -f ~/temp.cnf /etc/ssh/sshd_config
-
+  mv -f /tmp/authorized_keys ~/.ssh/authorized_keys
   sudo service ssh restart
 fi  
 
