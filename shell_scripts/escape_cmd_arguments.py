@@ -13,7 +13,6 @@ def escape_argument(arg):
 
     return escape_for_cmd_exe(arg)
 
-
 def escape_for_cmd_exe(arg):
     # Escape an argument string to be suitable to be passed to
     # cmd.exe on Windows
