@@ -153,6 +153,9 @@ stopsignal = KILL
 stopwaitsecs = 10
 EOF
 
+if [ ! -f ~/.ssh ]; then
+  mkdir ~/.ssh
+fi
 
 if [ ! -f /var/log/frp.log ]; then
   sudo service supervisor start
