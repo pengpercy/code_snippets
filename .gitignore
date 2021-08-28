@@ -1,6 +1,7 @@
-shell_scripts/*.json
+*.json
 shell_scripts/test*.sh
 shell_scripts/tmp.*
 .vscode/*
 shell_scripts/log/*
 log/*
+.DS_Store
