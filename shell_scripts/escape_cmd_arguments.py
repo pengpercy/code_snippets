@@ -1,7 +1,6 @@
 import re
 import os
 
-
 def escape_argument(arg):
     # Escape the argument for the cmd.exe shell.
     # See https://docs.microsoft.com/zh-cn/archive/blogs/twistylittlepassagesallalike/everyone-quotes-command-line-arguments-the-wrong-way
