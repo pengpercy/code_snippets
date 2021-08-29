@@ -1,4 +1,8 @@
+import sys
 import time
+import json
+import logging
+import logging.handlers
 from datetime import datetime, timezone, timedelta
 from lxml import etree
 from selenium import webdriver
@@ -6,7 +10,15 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-import json
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+stream_handler = logging.StreamHandler(sys.stderr)
+file_handler = logging.FileHandler('log.log')
+log_formatter = logging.Formatter("%(asctime)s|%(levelname)s|%(filename)s[:%(lineno)d]|%(message)s")
+stream_handler.setFormatter(log_formatter)
+file_handler.setFormatter(log_formatter)
+logger.addHandler(stream_handler)
+logger.addHandler(file_handler)
 
 
 def get_config():
@@ -18,7 +30,7 @@ def get_config():
 def get_driver():
     """实例化webdriver"""
     options = webdriver.ChromeOptions()
-    options.add_argument('--headless')
+    # options.add_argument('--headless')
     options.add_argument('--no-sandbox')
     options.add_argument('--disable-dev-shm-usage')
     options.add_argument('--incognito')
@@ -64,7 +76,7 @@ def execute_code(driver):
         )
         code_run_element.click()
     except Exception as e:
-        write_log("点击执行报错:{}".format(e))
+        logger.error(globel_driver.current_url+"点击执行报错:{}".format(e))
         driver.implicitly_wait(20)
     time.sleep(3)
 
@@ -79,17 +91,17 @@ def get_running_status(driver):
 
 
 def login(driver):
+    logger.info("开始登录")
     script_url = "https://www.google.com?hl=en"
     driver.get(script_url)
     driver = read_cookies(driver)
     driver.get(get_config()["script_url"])
-    write_log("开始登录")
     execute_code(driver)
     if 'Interrupt execution' not in get_running_status(driver):
         execute_code(driver)
         time.sleep(3)
         # code_input_element.send_keys(Keys.CONTROL, Keys.ENTER)
-    write_log('当前状态:' + get_running_status(driver))
+    logger.info('当前状态:' + get_running_status(driver))
     run_deamon(driver)
 
 
@@ -98,7 +110,7 @@ def fresh_page(driver):
         driver.refresh()
         driver.switch_to_alert().accept()
     except Exception as e:
-        write_log("刷新报错:{}".format(e))
+        logger.error(globel_driver.current_url+"刷新报错:{}".format(e))
         driver.implicitly_wait(20)
     return driver
 
@@ -113,6 +125,7 @@ def save_cookie(driver):
 
 def read_cookies(driver):
     """读取cookies"""
+    logger.info("读取cookies")
     with open("/tmp/cookies.json", "r") as fp:
         cookies = json.load(fp)
         for cookie in cookies:
@@ -127,7 +140,7 @@ def read_cookies(driver):
 def run_deamon(driver):
     duration = 0
     error_count = 0
-    write_log("开始进程守护")
+    logger.info("开始进程守护")
     while is_running:
         for i in range(100):
             try:
@@ -147,10 +160,10 @@ def run_deamon(driver):
                     execute_code(driver)
                     continue
                 if 'Interrupt execution' not in statues_description:
-                    write_log('点击运行前' + statues_description)
+                    logger.info('点击运行前' + statues_description)
                     execute_code(driver)
                     time.sleep(30)
-                    write_log('点击运行后:' + get_running_status(driver))
+                    logger.info('点击运行后:' + get_running_status(driver))
                     time.sleep(30)
                     if 'Interrupt execution' not in get_running_status(driver):
                         fresh_page(driver)
@@ -158,18 +171,18 @@ def run_deamon(driver):
                     time.sleep(1)
                     duration += 1
                 if duration % 100 == 0:
-                    write_log("当前duration：{}, {}".format(
+                    logger.info("当前duration：{}, {}".format(
                         duration, get_running_status(driver)))
                 continue
             except Exception as e:
                 error_count += 1
-                write_log("error 守护进程:{}".format(e))
+                logger.error("error 守护进程:{}".format(e))
                 time.sleep(0.1)
         if get_config()["script_url"] != driver.current_url:
             break
     if not is_running:
         time.sleep(10)
-    write_log("重新登录")
+    logger.info("重新登录")
     globel_driver = driver
 
 
