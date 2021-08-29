@@ -1,3 +1,4 @@
+*.log
 *.json
 shell_scripts/test*.sh
 shell_scripts/tmp.*
