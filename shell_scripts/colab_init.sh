@@ -124,6 +124,8 @@ numprocs = 1
 startretries = 100
 stopsignal = KILL
 stopwaitsecs = 10
+killasgroup=true
+stopasgroup=true
 EOF
 
 cat >/etc/supervisor/conf.d/colab_daemon.conf <<-EOF
@@ -138,6 +140,8 @@ numprocs = 1
 startretries = 100
 stopsignal = KILL
 stopwaitsecs = 10
+killasgroup=true
+stopasgroup=true
 EOF
 
 cat >/etc/supervisor/conf.d/shadowsocks-libev.conf <<-EOF
@@ -152,6 +156,8 @@ numprocs = 1
 startretries = 100
 stopsignal = KILL
 stopwaitsecs = 10
+killasgroup=true
+stopasgroup=true
 EOF
 
 if [ ! -f /root/.ssh ]; then
