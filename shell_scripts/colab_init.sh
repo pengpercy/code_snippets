@@ -70,7 +70,7 @@ use_compression = true
 custom_domains = ${frp_server_domain}
 [colab.${instance_name}.jupyter]
 type = tcp
-local_ip = localhost
+local_ip = 172.28.0.2
 local_port = 9000
 remote_port = 18616
 use_encryption = true
