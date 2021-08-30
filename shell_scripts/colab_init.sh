@@ -1,4 +1,3 @@
-
 #!/usr/bin/env bash
 ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
 
@@ -15,7 +14,7 @@ EOF
 fi
 
 echo "安装依赖..."
-sudo apt update -qq && sudo apt install -qq -y shadowsocks-libev rng-tools supervisor vim htop chromium-chromedriver git jq bash-completion ssh >/dev/null
+sudo apt update -qq && sudo apt install -qq -y shadowsocks-libev rng-tools net-tools supervisor vim htop chromium-chromedriver git jq bash-completion ssh >/dev/null
 source ~/.bashrc
 
 echo "设置配置信息"
@@ -26,6 +25,7 @@ frp_token=$(echo $init_config | jq -r '.frp_token')
 frp_server_domain=$(echo $init_config | jq -r '.frp_server_domain')
 frp_server_addr=$(echo $init_config | jq -r '.frp_server_addr')
 frp_server_port=$(echo $init_config | jq -r '.frp_server_port')
+frp_admin_port=$(echo $init_config | jq -r '.frp_admin_port')
 ssh_port=$(echo $init_config | jq -r '.ssh_port')
 ssh_password=$(echo $init_config | jq -r '.ssh_password')
 shadowsocksport=$(echo $init_config | jq -r '.shadowsocksport')
@@ -45,6 +45,7 @@ cat >/etc/frp/frpc.ini <<-EOF
 [common]
 server_addr = ${frp_server_addr}
 server_port = ${frp_server_port}
+admin_port = ${frp_admin_port}
 token = ${frp_token}
 [colab.${instance_name}.ssh]
 type = tcp
@@ -65,14 +66,6 @@ type = udp
 local_ip = localhost
 local_port = ${shadowsocksport}
 remote_port = ${shadowsocksport}
-use_encryption = true
-use_compression = true
-custom_domains = ${frp_server_domain}
-[colab.${instance_name}.jupyter]
-type = tcp
-local_ip = 172.28.0.2
-local_port = 9000
-remote_port = 18616
 use_encryption = true
 use_compression = true
 custom_domains = ${frp_server_domain}
