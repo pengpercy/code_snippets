@@ -107,6 +107,7 @@ def login(driver):
 
 
 def fresh_page(driver):
+    logger.info("刷新页面")
     try:
         driver.refresh()
         driver.switch_to_alert().accept()
@@ -145,7 +146,7 @@ def run_deamon(driver):
     while is_running:
         for i in range(100):
             try:
-                save_cookie(driver)
+                # save_cookie(driver)
                 tree = etree.HTML(driver.page_source)
                 if len(tree.xpath('//colab-run-button/@title')) == 0:
                     time.sleep(0.1)
