@@ -161,7 +161,7 @@ stopsignal = KILL
 stopwaitsecs = 10
 EOF
 
-if [ ! -f ~/.ssh ]; then
+if [ ! -f /root/.ssh ]; then
   mkdir ~/.ssh
 fi
 
