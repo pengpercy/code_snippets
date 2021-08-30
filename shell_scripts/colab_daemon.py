@@ -14,7 +14,8 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 stream_handler = logging.StreamHandler(sys.stderr)
 file_handler = logging.FileHandler('log.log')
-log_formatter = logging.Formatter("%(asctime)s|%(levelname)s|%(filename)s[:%(lineno)d]|%(message)s")
+log_formatter = logging.Formatter(
+    "%(asctime)s|%(levelname)s|%(filename)s[:%(lineno)d]|%(message)s")
 stream_handler.setFormatter(log_formatter)
 file_handler.setFormatter(log_formatter)
 logger.addHandler(stream_handler)
@@ -87,7 +88,7 @@ def get_running_status(driver):
     if len(tree.xpath('//colab-run-button')) == 0:
         fresh_page(driver)
         time.sleep(10)
-    return tree.xpath('//colab-run-button/@title')[0]
+    return json.dumps(tree.xpath('//colab-run-button/@title')[0], ensure_ascii=False)
 
 
 def login(driver):
