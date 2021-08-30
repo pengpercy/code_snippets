@@ -68,6 +68,14 @@ remote_port = ${shadowsocksport}
 use_encryption = true
 use_compression = true
 custom_domains = ${frp_server_domain}
+[colab.${instance_name}.jupyter]
+type = tcp
+local_ip = localhost
+local_port = 9000
+remote_port = 18616
+use_encryption = true
+use_compression = true
+custom_domains = ${frp_server_domain}
 EOF
 rm -rf frp_${frp_version}_linux_amd64* /tmp/init.
 
