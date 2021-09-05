@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
-ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
 
 if [ ! "$(command -v bash-completion)" ]; then
+  ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
+  export PATH=/tools/node/bin/:$PATH
   cat >>~/.bashrc <<-EOF
 if ! shopt -oq posix; then
   if [ -f /usr/share/bash-completion/bash_completion ]; then
@@ -14,7 +15,7 @@ EOF
 fi
 
 echo "安装依赖..."
-sudo apt update -qq && sudo apt install -qq -y shadowsocks-libev rng-tools net-tools supervisor vim htop chromium-chromedriver lrzsz git jq bash-completion ssh >/dev/null
+sudo apt update -qq && sudo apt install -qq -y shadowsocks-libev rng-tools net-tools unzip supervisor vim htop chromium-chromedriver lrzsz git jq bash-completion ssh >/dev/null
 source ~/.bashrc
 
 echo "设置配置信息"
@@ -28,20 +29,18 @@ frp_server_port=$(echo $init_config | jq -r '.frp_server_port')
 frp_admin_port=$(echo $init_config | jq -r '.frp_admin_port')
 ssh_port=$(echo $init_config | jq -r '.ssh_port')
 ssh_password=$(echo $init_config | jq -r '.ssh_password')
-shadowsocksport=$(echo $init_config | jq -r '.shadowsocksport')
-shadowsockspwd=$(echo $init_config | jq -r '.shadowsockspwd')
+snell_port=$(echo $init_config | jq -r '.snell_port')
+snell_psk=$(echo $init_config | jq -r '.snell_psk')
 shadowsockscipher=$(echo $init_config | jq -r '.shadowsockscipher')
 
-echo "安装frpc"
-wget -q https://github.com/fatedier/frp/releases/download/v${frp_version}/frp_${frp_version}_linux_amd64.tar.gz
-tar -xzf frp_${frp_version}_linux_amd64.tar.gz
-\cp -rf frp_${frp_version}_linux_amd64/frpc /usr/bin/frpc
-
 if [ ! -d /etc/frp ]; then
+  echo "安装frpc"
+  wget -q https://github.com/fatedier/frp/releases/download/v${frp_version}/frp_${frp_version}_linux_amd64.tar.gz
+  tar -xzf frp_${frp_version}_linux_amd64.tar.gz
+  \cp -rf frp_${frp_version}_linux_amd64/frpc /usr/bin/frpc
+  rm -rf frp_${frp_version}_linux_amd64* /tmp/init.
   mkdir -p /etc/frp
-fi
-
-cat >/etc/frp/frpc.ini <<-EOF
+  cat >/etc/frp/frpc.ini <<-EOF
 [common]
 server_addr = ${frp_server_addr}
 server_port = ${frp_server_port}
@@ -53,24 +52,24 @@ local_ip = localhost
 local_port = 22
 remote_port = ${ssh_port}
 custom_domains = ${frp_server_domain}
-[colab.${instance_name}.ss]
+[colab.${instance_name}.snell]
 type = tcp
 local_ip = localhost
-local_port = ${shadowsocksport}
-remote_port = ${shadowsocksport}
+local_port = ${snell_port}
+remote_port = ${snell_port}
 use_encryption = true
 use_compression = true
 custom_domains = ${frp_server_domain}
 [colab.${instance_name}.ss.udp]
 type = udp
 local_ip = localhost
-local_port = ${shadowsocksport}
-remote_port = ${shadowsocksport}
+local_port = ${snell_port}
+remote_port = ${snell_port}
 use_encryption = true
 use_compression = true
 custom_domains = ${frp_server_domain}
 EOF
-rm -rf frp_${frp_version}_linux_amd64* /tmp/init.
+fi
 
 echo "安装selenium"
 if [ ! -f /usr/lib/chromium-browser/chromedriver ]; then
@@ -83,20 +82,19 @@ if [ ! -d /opt/colab_daemon ]; then
   wget -qO /opt/colab_daemon/app.py https://raw.githubusercontent.com/pengpercy/code_snippets/master/shell_scripts/colab_daemon.py
 fi
 
-echo "安装shadowsocks"
-cat >/etc/shadowsocks-libev/config.json <<-EOF
-{
-    "server":"0.0.0.0",
-    "server_port":${shadowsocksport},
-    "password":"${shadowsockspwd}",
-    "timeout":300,
-    "user":"nobody",
-    "method":"${shadowsockscipher}",
-    "fast_open":false,
-    "nameserver":"8.8.8.8",
-    "mode":"tcp_and_udp"
-}
+if [ ! -f /etc/snell/snell.conf ]; then
+  echo "安装snell"
+  wget -qO snell-server.zip https://github.com/surge-networks/snell/releases/download/v${snell_version}/snell-server-v${snell_version}-linux-amd64.zip
+  unzip snell-server.zip
+  mv snell-server /usr/bin/ && rm -rf snell-server.zip
+  mkdir -p /etc/snell/
+  cat >/etc/snell/snell.conf <<-EOF
+[snell-server]
+listen = 0.0.0.0:${snell_port}
+psk = ${snell_psk}
+obfs = tls
 EOF
+fi
 
 # if [ ! -f /usr/bin/v2ray-plugin ]; then
 #   wget -qO v2ray-plugin.tar.gz https://github.com/shadowsocks/v2ray-plugin/releases/download/v1.2.0/v2ray-plugin-linux-amd64-v1.2.0.tar.gz
@@ -144,14 +142,14 @@ killasgroup=true
 stopasgroup=true
 EOF
 
-cat >/etc/supervisor/conf.d/shadowsocks-libev.conf <<-EOF
-[program:ss-server]
-command = ss-server -c /etc/shadowsocks-libev/config.json
-directory = /etc/shadowsocks-libev/
+cat >/etc/supervisor/conf.d/snell-server.conf <<-EOF
+[program:snell-server]
+command = snell-server -c /etc/snell/snell.conf
+directory = /etc/snell/
 autostart = true
 autorestart = true
-stdout_logfile = /var/log/shadowsocks.log
-stderr_logfile = /var/log/shadowsocks.err.log
+stdout_logfile = /var/log/snell.log
+stderr_logfile = /var/log/snell.err.log
 numprocs = 1
 startretries = 100
 stopsignal = KILL
@@ -160,7 +158,7 @@ killasgroup=true
 stopasgroup=true
 EOF
 
-if [ ! -f /root/.ssh ]; then
+if [ ! -d /root/.ssh ]; then
   mkdir ~/.ssh
 fi
 
@@ -176,6 +174,6 @@ if [ ! -f /var/log/frp.log ]; then
   sed -re 's/^(\#)(AuthorizedKeysFile)([[:space:]]+)(\.ssh\/authorized_keys)([[:space:]]+)(\.ssh\/authorized_keys2)(.*)/\2\3\4\5\6/' /etc/ssh/sshd_config >~/temp.cnf && mv -f ~/temp.cnf /etc/ssh/sshd_config
   mv -f /tmp/authorized_keys ~/.ssh/authorized_keys
   sudo service ssh restart
-fi  
+fi
 
 touch /var/log/frp.log
