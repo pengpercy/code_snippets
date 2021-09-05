@@ -84,6 +84,7 @@ fi
 
 if [ ! -f /etc/snell/snell.conf ]; then
   echo "安装snell"
+  echo $("https://github.com/surge-networks/snell/releases/download/v${snell_version}/snell-server-v${snell_version}-linux-amd64.zip")
   wget -qO snell-server.zip https://github.com/surge-networks/snell/releases/download/v${snell_version}/snell-server-v${snell_version}-linux-amd64.zip
   ls
   unzip snell-server.zip
