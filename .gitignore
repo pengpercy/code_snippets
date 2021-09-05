@@ -1,8 +1,9 @@
 *.log
 *.json
+log/*
+shell_scripts/log/*
 shell_scripts/test*.sh
 shell_scripts/tmp.*
+order_from_tmall/*
 .vscode/*
-shell_scripts/log/*
-log/*
 .DS_Store
