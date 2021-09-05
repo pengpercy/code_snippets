@@ -31,7 +31,7 @@ ssh_port=$(echo $init_config | jq -r '.ssh_port')
 ssh_password=$(echo $init_config | jq -r '.ssh_password')
 snell_port=$(echo $init_config | jq -r '.snell_port')
 snell_psk=$(echo $init_config | jq -r '.snell_psk')
-shadowsockscipher=$(echo $init_config | jq -r '.shadowsockscipher')
+snell_version=$(echo $init_config | jq -r '.snell_version')
 
 if [ ! -d /etc/frp ]; then
   echo "安装frpc"
