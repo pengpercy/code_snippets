@@ -2,7 +2,7 @@
 
 if [ ! "$(command -v bash-completion)" ]; then
   ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
-  export PATH=/tools/node/bin/:$PATH
+  \cp -rf /tools/node/bin/node /usr/bin
   cat >>~/.bashrc <<-EOF
 if ! shopt -oq posix; then
   if [ -f /usr/share/bash-completion/bash_completion ]; then
