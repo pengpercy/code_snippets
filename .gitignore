@@ -5,5 +5,6 @@ shell_scripts/log/*
 shell_scripts/test*.sh
 shell_scripts/tmp.*
 order_from_tmall/*
-.vscode/*
+.vscode
 .DS_Store
+.idea
