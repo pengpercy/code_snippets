@@ -110,7 +110,7 @@ def fresh_page(driver):
     logger.info("刷新页面")
     try:
         driver.refresh()
-        driver.switch_to_alert().accept()
+        driver.switch_to.alert()
     except Exception as e:
         logger.error(globel_driver.current_url+"刷新报错:{}".format(e))
         driver.implicitly_wait(20)
