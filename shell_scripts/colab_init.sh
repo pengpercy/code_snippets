@@ -147,7 +147,7 @@ stopasgroup=true
 EOF
 fi
 
-if [ ! -f /etc/supervisor/conf.d/colab_daemon.conf ]; then
+if [ ! -f /etc/supervisor/conf.d/snell-server.conf ]; then
   cat >/etc/supervisor/conf.d/snell-server.conf <<-EOF
 [program:snell-server]
 command = snell-server -c /etc/snell/snell.conf
