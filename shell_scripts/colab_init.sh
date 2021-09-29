@@ -71,11 +71,11 @@ custom_domains = ${frp_server_domain}
 EOF
 fi
 
-echo "安装selenium"
 if [ ! -f /usr/lib/chromium-browser/chromedriver ]; then
+  echo "安装selenium"
   \cp -rf /usr/lib/chromium-browser/chromedriver /usr/bin
+  pip3 install -q selenium pyperclip apscheduler lxml pyecharts >/dev/null
 fi
-pip3 install -q selenium pyperclip apscheduler lxml pyecharts >/dev/null
 # pip3 install pyecharts jupyterlab  >/dev/null && pip3 uninstall jupyterlab -y  >/dev/null && pip3 install jupyterlab  >/dev/null && jupyter lab clean  >/dev/null && jupyter lab build  >/dev/null
 if [ ! -d /opt/colab_daemon ]; then
   echo "安装colab_daemon"
