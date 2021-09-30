@@ -13,10 +13,10 @@ if ! shopt -oq posix; then
 fi
 EOF
   source ~/.bashrc
-  echo "安装依赖..."
+  echo "apt安装依赖..."
   sudo apt update -qq && sudo apt install -qq -y rng-tools net-tools unzip supervisor vim htop chromium-chromedriver lrzsz git jq bash-completion ssh >/dev/null
 
-  echo "安装selenium"
+  echo "pip安装依赖"
   pip3 install -q selenium pyperclip apscheduler lxml pyecharts >/dev/null
 
   echo "设置配置信息"
