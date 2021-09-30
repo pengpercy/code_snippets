@@ -12,11 +12,11 @@ if ! shopt -oq posix; then
   fi
 fi
 EOF
+  source ~/.bashrc
 fi
 
 echo "安装依赖..."
 sudo apt update -qq && sudo apt install -qq -y rng-tools net-tools unzip supervisor vim htop chromium-chromedriver lrzsz git jq bash-completion ssh >/dev/null
-source ~/.bashrc
 
 echo "设置配置信息"
 init_config=$(cat /tmp/init.config | base64 -di --decode)
@@ -111,7 +111,7 @@ fi
 # fi
 
 if [ ! -f /etc/supervisor/conf.d/frpc.conf ]; then
-  echo "配置supervisor"
+  echo "配置frpc"
   cat >/etc/supervisor/conf.d/frpc.conf <<-EOF
 [program:frpc]
 command = frpc -c /etc/frp/frpc.ini
@@ -130,6 +130,7 @@ EOF
 fi
 
 if [ ! -f /etc/supervisor/conf.d/colab_daemon.conf ]; then
+  echo "配置colab_daemon"
   cat >/etc/supervisor/conf.d/colab_daemon.conf <<-EOF
 [program:colab_daemon]
 command = python3 /opt/colab_daemon/app.py
@@ -148,6 +149,7 @@ EOF
 fi
 
 if [ ! -f /etc/supervisor/conf.d/snell-server.conf ]; then
+  echo "配置snell"
   cat >/etc/supervisor/conf.d/snell-server.conf <<-EOF
 [program:snell-server]
 command = snell-server -c /etc/snell/snell.conf
