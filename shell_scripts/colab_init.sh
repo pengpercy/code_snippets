@@ -13,25 +13,27 @@ if ! shopt -oq posix; then
 fi
 EOF
   source ~/.bashrc
+  echo "安装依赖..."
+  sudo apt update -qq && sudo apt install -qq -y rng-tools net-tools unzip supervisor vim htop chromium-chromedriver lrzsz git jq bash-completion ssh >/dev/null
+
+  echo "安装selenium"
+  pip3 install -q selenium pyperclip apscheduler lxml pyecharts >/dev/null
+
+  echo "设置配置信息"
+  init_config=$(cat /tmp/init.config | base64 -di --decode)
+  instance_name=$(echo $init_config | jq -r '.instance_name')
+  frp_version=$(echo $init_config | jq -r '.frp_version')
+  frp_token=$(echo $init_config | jq -r '.frp_token')
+  frp_server_domain=$(echo $init_config | jq -r '.frp_server_domain')
+  frp_server_addr=$(echo $init_config | jq -r '.frp_server_addr')
+  frp_server_port=$(echo $init_config | jq -r '.frp_server_port')
+  frp_admin_port=$(echo $init_config | jq -r '.frp_admin_port')
+  ssh_port=$(echo $init_config | jq -r '.ssh_port')
+  ssh_password=$(echo $init_config | jq -r '.ssh_password')
+  snell_port=$(echo $init_config | jq -r '.snell_port')
+  snell_psk=$(echo $init_config | jq -r '.snell_psk')
+  snell_version=$(echo $init_config | jq -r '.snell_version')
 fi
-
-echo "安装依赖..."
-sudo apt update -qq && sudo apt install -qq -y rng-tools net-tools unzip supervisor vim htop chromium-chromedriver lrzsz git jq bash-completion ssh >/dev/null
-
-echo "设置配置信息"
-init_config=$(cat /tmp/init.config | base64 -di --decode)
-instance_name=$(echo $init_config | jq -r '.instance_name')
-frp_version=$(echo $init_config | jq -r '.frp_version')
-frp_token=$(echo $init_config | jq -r '.frp_token')
-frp_server_domain=$(echo $init_config | jq -r '.frp_server_domain')
-frp_server_addr=$(echo $init_config | jq -r '.frp_server_addr')
-frp_server_port=$(echo $init_config | jq -r '.frp_server_port')
-frp_admin_port=$(echo $init_config | jq -r '.frp_admin_port')
-ssh_port=$(echo $init_config | jq -r '.ssh_port')
-ssh_password=$(echo $init_config | jq -r '.ssh_password')
-snell_port=$(echo $init_config | jq -r '.snell_port')
-snell_psk=$(echo $init_config | jq -r '.snell_psk')
-snell_version=$(echo $init_config | jq -r '.snell_version')
 
 if [ ! -d /etc/frp ]; then
   echo "安装frpc"
@@ -71,11 +73,6 @@ custom_domains = ${frp_server_domain}
 EOF
 fi
 
-if [ ! -f /usr/bin/chromedriver ]; then
-  echo "安装selenium"
-  \cp -rf /usr/lib/chromium-browser/chromedriver /usr/bin
-  pip3 install -q selenium pyperclip apscheduler lxml pyecharts >/dev/null
-fi
 # pip3 install pyecharts jupyterlab  >/dev/null && pip3 uninstall jupyterlab -y  >/dev/null && pip3 install jupyterlab  >/dev/null && jupyter lab clean  >/dev/null && jupyter lab build  >/dev/null
 if [ ! -d /opt/colab_daemon ]; then
   echo "安装colab_daemon"
