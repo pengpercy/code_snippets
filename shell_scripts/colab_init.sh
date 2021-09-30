@@ -71,7 +71,7 @@ custom_domains = ${frp_server_domain}
 EOF
 fi
 
-if [ ! -f /usr/lib/chromium-browser/chromedriver ]; then
+if [ ! -f /usr/bin/chromedriver ]; then
   echo "安装selenium"
   \cp -rf /usr/lib/chromium-browser/chromedriver /usr/bin
   pip3 install -q selenium pyperclip apscheduler lxml pyecharts >/dev/null
