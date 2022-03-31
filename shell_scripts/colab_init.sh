@@ -14,7 +14,8 @@ fi
 EOF
   source ~/.bashrc
   echo "apt安装依赖..."
-  sudo apt update -qq && sudo apt install -qq -y rng-tools net-tools unzip supervisor vim htop chromium-chromedriver lrzsz git jq bash-completion ssh >/dev/null
+  # sudo apt update -qq && 
+  sudo apt install -qq -y rng-tools net-tools unzip supervisor vim htop chromium-chromedriver lrzsz git jq bash-completion ssh >/dev/null
 
   echo "pip安装依赖"
   pip3 install -q selenium pyperclip apscheduler lxml pyecharts >/dev/null
