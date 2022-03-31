@@ -14,7 +14,7 @@ fi
 EOF
   source ~/.bashrc
   echo "apt安装依赖..."
-  # sudo apt update -qq && 
+  sudo apt update -qq >/dev/null
   sudo apt install -qq -y rng-tools net-tools unzip supervisor vim htop chromium-chromedriver lrzsz git jq bash-completion ssh >/dev/null
 
   echo "pip安装依赖"
