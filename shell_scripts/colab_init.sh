@@ -15,7 +15,7 @@ EOF
   source ~/.bashrc
   echo "apt安装依赖..."
   sudo apt update -qq >/dev/null
-  sudo apt install -qq -y rng-tools net-tools unzip supervisor vim htop chromium-chromedriver lrzsz git jq bash-completion ssh >/dev/null
+  sudo apt install -qq -y rng-tools net-tools unzip openssh-server supervisor vim htop chromium-chromedriver lrzsz git jq bash-completion ssh >/dev/null
 
   echo "pip安装依赖"
   pip3 install -q selenium pyperclip apscheduler lxml pyecharts >/dev/null
@@ -36,43 +36,43 @@ EOF
   snell_version=$(echo $init_config | jq -r '.snell_version')
 fi
 
-if [ ! -d /etc/frp ]; then
-  echo "安装frpc"
-  wget -q https://github.com/fatedier/frp/releases/download/v${frp_version}/frp_${frp_version}_linux_amd64.tar.gz
-  tar -xzf frp_${frp_version}_linux_amd64.tar.gz
-  \cp -rf frp_${frp_version}_linux_amd64/frpc /usr/bin/frpc
-  rm -rf frp_${frp_version}_linux_amd64* /tmp/init.
-  mkdir -p /etc/frp
-  cat >/etc/frp/frpc.ini <<-EOF
-[common]
-server_addr = ${frp_server_addr}
-server_port = ${frp_server_port}
-admin_port = ${frp_admin_port}
-token = ${frp_token}
-[colab.${instance_name}.ssh]
-type = tcp
-local_ip = localhost
-local_port = 22
-remote_port = ${ssh_port}
-custom_domains = ${frp_server_domain}
-[colab.${instance_name}.snell]
-type = tcp
-local_ip = localhost
-local_port = ${snell_port}
-remote_port = ${snell_port}
-use_encryption = true
-use_compression = true
-custom_domains = ${frp_server_domain}
-[colab.${instance_name}.ss.udp]
-type = udp
-local_ip = localhost
-local_port = ${snell_port}
-remote_port = ${snell_port}
-use_encryption = true
-use_compression = true
-custom_domains = ${frp_server_domain}
-EOF
-fi
+# if [ ! -d /etc/frp ]; then
+#   echo "安装frpc"
+#   wget -q https://github.com/fatedier/frp/releases/download/v${frp_version}/frp_${frp_version}_linux_amd64.tar.gz
+#   tar -xzf frp_${frp_version}_linux_amd64.tar.gz
+#   \cp -rf frp_${frp_version}_linux_amd64/frpc /usr/bin/frpc
+#   rm -rf frp_${frp_version}_linux_amd64* /tmp/init.
+#   mkdir -p /etc/frp
+#   cat >/etc/frp/frpc.ini <<-EOF
+# [common]
+# server_addr = ${frp_server_addr}
+# server_port = ${frp_server_port}
+# admin_port = ${frp_admin_port}
+# token = ${frp_token}
+# [colab.${instance_name}.ssh]
+# type = tcp
+# local_ip = localhost
+# local_port = 22
+# remote_port = ${ssh_port}
+# custom_domains = ${frp_server_domain}
+# [colab.${instance_name}.snell]
+# type = tcp
+# local_ip = localhost
+# local_port = ${snell_port}
+# remote_port = ${snell_port}
+# use_encryption = true
+# use_compression = true
+# custom_domains = ${frp_server_domain}
+# [colab.${instance_name}.ss.udp]
+# type = udp
+# local_ip = localhost
+# local_port = ${snell_port}
+# remote_port = ${snell_port}
+# use_encryption = true
+# use_compression = true
+# custom_domains = ${frp_server_domain}
+# EOF
+# fi
 
 # pip3 install pyecharts jupyterlab  >/dev/null && pip3 uninstall jupyterlab -y  >/dev/null && pip3 install jupyterlab  >/dev/null && jupyter lab clean  >/dev/null && jupyter lab build  >/dev/null
 if [ ! -d /opt/colab_daemon ]; then
@@ -81,51 +81,32 @@ if [ ! -d /opt/colab_daemon ]; then
   wget -qO /opt/colab_daemon/app.py https://raw.githubusercontent.com/pengpercy/code_snippets/master/shell_scripts/colab_daemon.py
 fi
 
-if [ ! -f /etc/snell/snell.conf ]; then
-  echo "安装snell"
-  wget -qO snell-server.zip https://github.com/surge-networks/snell/releases/download/v${snell_version}/snell-server-v${snell_version}-linux-amd64.zip
-  unzip -q snell-server.zip
-  mv snell-server /usr/bin/ && rm -rf snell-server.zip
-  mkdir -p /etc/snell/
-  cat >/etc/snell/snell.conf <<-EOF
-[snell-server]
-listen = 0.0.0.0:${snell_port}
-psk = ${snell_psk}
-obfs = tls
-EOF
+if [ ! -f /usr/bin/cloudflared ]; then
+  echo "安装cloudflared"
+  wget -qO /usr/bin/cloudflared https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64
+  chmod +x /usr/bin/cloudflared
 fi
 
-# if [ ! -f /usr/bin/v2ray-plugin ]; then
-#   wget -qO v2ray-plugin.tar.gz https://github.com/shadowsocks/v2ray-plugin/releases/download/v1.2.0/v2ray-plugin-linux-amd64-v1.2.0.tar.gz
-#   tar -xzf v2ray-plugin.tar.gz && mv v2ray-plugin_linux_amd64 /usr/bin/v2ray-plugin && rm v2ray-plugin.tar.gz
-# fi
 
-# if [ ! -f /usr/bin/youtube-dl ]; then
-#   wget -qO youtube-dl.tar.gz https://github.com/ytdl-org/youtube-dl/releases/download/2020.11.17/youtube-dl-2020.11.17.tar.gz && tar -xzf youtube-dl.tar.gz && cd youtube-dl/ && mv -f ./youtube-dl /usr/bin/youtube-dl && cd .. && rm -rf youtube*
-# fi
 
-# if [ ! -f /usr/bin/trojan ]; then
-#   wget -qO trojan.tar.xz https://github.com/trojan-gfw/trojan/releases/download/v1.16.0/trojan-1.16.0-linux-amd64.tar.xz && xz -d trojan.tar.xz && tar xf trojan.tar && cd trojan/ && mv -f ./trojan /usr/bin/ && cd .. && rm -rf trojan*
+# if [ ! -f /etc/supervisor/conf.d/frpc.conf ]; then
+#   echo "配置frpc"
+#   cat >/etc/supervisor/conf.d/frpc.conf <<-EOF
+# [program:frpc]
+# command = frpc -c /etc/frp/frpc.ini
+# directory = /etc/frp/
+# autostart = true
+# autorestart = true
+# stdout_logfile = /var/log/frp.log
+# stderr_logfile = /var/log/frp.err.log
+# numprocs = 1
+# startretries = 100
+# stopsignal = KILL
+# stopwaitsecs = 10
+# killasgroup=true
+# stopasgroup=true
+# EOF
 # fi
-
-if [ ! -f /etc/supervisor/conf.d/frpc.conf ]; then
-  echo "配置frpc"
-  cat >/etc/supervisor/conf.d/frpc.conf <<-EOF
-[program:frpc]
-command = frpc -c /etc/frp/frpc.ini
-directory = /etc/frp/
-autostart = true
-autorestart = true
-stdout_logfile = /var/log/frp.log
-stderr_logfile = /var/log/frp.err.log
-numprocs = 1
-startretries = 100
-stopsignal = KILL
-stopwaitsecs = 10
-killasgroup=true
-stopasgroup=true
-EOF
-fi
 
 if [ ! -f /etc/supervisor/conf.d/colab_daemon.conf ]; then
   echo "配置colab_daemon"
@@ -146,24 +127,6 @@ stopasgroup=true
 EOF
 fi
 
-if [ ! -f /etc/supervisor/conf.d/snell-server.conf ]; then
-  echo "配置snell"
-  cat >/etc/supervisor/conf.d/snell-server.conf <<-EOF
-[program:snell-server]
-command = snell-server -c /etc/snell/snell.conf
-directory = /etc/snell/
-autostart = true
-autorestart = true
-stdout_logfile = /var/log/snell.log
-stderr_logfile = /var/log/snell.err.log
-numprocs = 1
-startretries = 100
-stopsignal = KILL
-stopwaitsecs = 10
-killasgroup=true
-stopasgroup=true
-EOF
-fi
 
 if [ ! -d /root/.ssh ]; then
   mkdir ~/.ssh

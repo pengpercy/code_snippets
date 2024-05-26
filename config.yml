@@ -1,0 +1,10 @@
+tunnel: server-alpha
+credentials-file: /root/.cloudflared/server-alpha.json
+
+ingress:
+  - hostname: alpha.bthi.top
+    service: ssh://localhost:22
+    originRequest:
+       noTLSVerify: true
+       disableChunkedEncoding: true
+  - service: http_status:404
